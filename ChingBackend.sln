@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ching", "Ching\Ching.csproj", "{9BC8AEAF-5A27-407E-94B8-061238617E2F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ching.IntegrationTests", "Ching.IntegrationTests\Ching.IntegrationTests.csproj", "{7FF92944-2C6F-4D8D-BC7F-BE3F4DC22527}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{9BC8AEAF-5A27-407E-94B8-061238617E2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BC8AEAF-5A27-407E-94B8-061238617E2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BC8AEAF-5A27-407E-94B8-061238617E2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FF92944-2C6F-4D8D-BC7F-BE3F4DC22527}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FF92944-2C6F-4D8D-BC7F-BE3F4DC22527}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FF92944-2C6F-4D8D-BC7F-BE3F4DC22527}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FF92944-2C6F-4D8D-BC7F-BE3F4DC22527}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
