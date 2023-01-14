@@ -2,12 +2,10 @@ namespace Ching.Entities;
 
 public class AccountPartition : BaseEntity
 {
-    public string Name { get; private set; }
-    public string Type { get; private set; }
-    public BudgetMonth BudgetMonth { get; private set; }
+    public string Name { get; set; }
+    public string Type { get; set; }
+    public BudgetMonth BudgetMonth { get; set; }
 
-    public int AccountId { get; private set; }
-    public Account Account { get; private set; }
-
-    private AccountPartition() { }
+    public int AccountId { get; set; }
+    public Account Account { get; set; }
 }

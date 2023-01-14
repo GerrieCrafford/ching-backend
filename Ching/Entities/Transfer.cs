@@ -2,16 +2,14 @@ namespace Ching.Entities;
 
 public class Transfer : BaseEntity
 {
-    public DateOnly Date { get; private set; }
-    public Decimal Amount { get; private set; }
+    public DateOnly Date { get; set; }
+    public Decimal Amount { get; set; }
 
-    public int SourcePartitionId { get; private set; }
-    public AccountPartition SourcePartition { get; private set; }
+    public int SourcePartitionId { get; set; }
+    public AccountPartition SourcePartition { get; set; }
 
-    public int DestinationPartitionId { get; private set; }
-    public AccountPartition DestinationPartition { get; private set; }
+    public int DestinationPartitionId { get; set; }
+    public AccountPartition DestinationPartition { get; set; }
 
-    public ICollection<BudgetAssignmentTransfer> BudgetAssignments { get; private set; }
-
-    private Transfer() { }
+    public ICollection<BudgetAssignmentTransfer> BudgetAssignments { get; set; }
 }

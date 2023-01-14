@@ -2,13 +2,11 @@ namespace Ching.Entities;
 
 public class AccountTransaction : BaseEntity
 {
-    public DateOnly Date { get; private set; }
-    public Decimal Amount { get; private set; }
-    public string? Note { get; private set; }
-    public ICollection<BudgetAssignmentTransaction> BudgetAssignments { get; private set; }
+    public DateOnly Date { get; set; }
+    public Decimal Amount { get; set; }
+    public string? Note { get; set; }
+    public ICollection<BudgetAssignmentTransaction> BudgetAssignments { get; set; }
 
-    public int AccountPartitionId { get; private set; }
-    public AccountPartition AccountPartition { get; private set; }
-
-    private AccountTransaction() { }
+    public int AccountPartitionId { get; set; }
+    public AccountPartition AccountPartition { get; set; }
 }

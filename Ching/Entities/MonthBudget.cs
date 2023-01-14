@@ -2,11 +2,9 @@ namespace Ching.Entities;
 
 public class MonthBudget : BaseEntity
 {
-    public Decimal Amount { get; private set; }
-    public BudgetMonth BudgetMonth { get; private set; }
+    public Decimal Amount { get; set; }
+    public BudgetMonth BudgetMonth { get; set; }
 
-    public int BudgetCategoryId { get; private set; }
-    public BudgetCategory BudgetCategory { get; private set; }
-
-    private MonthBudget() { }
+    public int BudgetCategoryId { get; set; }
+    public BudgetCategory BudgetCategory { get; set; }
 }
