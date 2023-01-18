@@ -7,4 +7,13 @@ public class MonthBudget : BaseEntity
 
     public int BudgetCategoryId { get; set; }
     public BudgetCategory BudgetCategory { get; set; }
+
+    private MonthBudget() { }
+
+    public MonthBudget(decimal amount, BudgetMonth budgetMonth, BudgetCategory budgetCategory)
+    {
+        Amount = amount;
+        BudgetMonth = budgetMonth;
+        BudgetCategory = budgetCategory;
+    }
 }
