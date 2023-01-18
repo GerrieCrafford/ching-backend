@@ -9,5 +9,6 @@ public class AccountPartitionConfiguration : IEntityTypeConfiguration<AccountPar
     public void Configure(EntityTypeBuilder<AccountPartition> builder)
     {
         builder.OwnsOne(a => a.BudgetMonth);
+        builder.Navigation(a => a.Account).AutoInclude();
     }
 }

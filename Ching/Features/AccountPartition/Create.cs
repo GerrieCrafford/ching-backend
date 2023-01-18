@@ -1,5 +1,6 @@
-namespace Ching.Features.BudgetCategory;
+namespace Ching.Features.AccountPartition;
 
+using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -10,7 +11,9 @@ public class Create
 {
     public record Command : IRequest<int>
     {
+        public int AccountId { get; set; }
         public string Name { get; set; }
+        public BudgetMonth? BudgetMonth { get; set; }
     }
 
     public class Handler : IRequestHandler<Command, int>
@@ -20,11 +23,13 @@ public class Create
 
         public async Task<int> Handle(Command request, CancellationToken cancellationToken)
         {
-            var budgetCategory = new BudgetCategory(request.Name);
-            await _db.BudgetCategories.AddAsync(budgetCategory, cancellationToken);
+            var account = await _db.Accounts.Where(acc => acc.Id == request.AccountId).Include(a => a.Partitions).SingleOrDefaultAsync();
+            var partition = new AccountPartition(request.Name, request.BudgetMonth);
+
+            account.Partitions.Add(partition);
             await _db.SaveChangesAsync();
 
-            return budgetCategory.Id;
+            return partition.Id;
         }
     }
 }

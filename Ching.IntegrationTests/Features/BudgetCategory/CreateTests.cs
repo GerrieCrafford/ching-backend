@@ -23,7 +23,5 @@ public class CreateTests
         created.ShouldNotBeNull();
         created.Id.ShouldBe(budgetCategoryId);
         created.Name.ShouldBe(command.Name);
-
-        Assert.Equal(1, 1);
     }
 }

@@ -2,11 +2,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Ching.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using Microsoft.Data.Sqlite;
+using Ching.Data;
+using Ching.Entities;
 
 namespace Ching.IntegrationTests;
 
@@ -58,21 +59,6 @@ public class SliceFixture : IAsyncLifetime
                     var connection = container.GetRequiredService<DbConnection>();
                     options.UseSqlite(connection);
                 });
-
-                // var sp = services.BuildServiceProvider();
-                // using (var scope = sp.CreateScope())
-                // using (var appContext = scope.ServiceProvider.GetRequiredService<ChingContext>())
-                // {
-                //     try
-                //     {
-                //         appContext.Database.EnsureCreated();
-                //     }
-                //     catch (Exception)
-                //     {
-                //         //Log errors or do anything you think it's needed
-                //         throw;
-                //     }
-                // }
             });
 
             builder.UseEnvironment("Development");
@@ -110,17 +96,52 @@ public class SliceFixture : IAsyncLifetime
         });
     }
 
+    public Task<T?> FindAsync<T>(int id)
+        where T : class, IEntity
+    {
+        return ExecuteDbContextAsync(db => db.Set<T>().FindAsync(id).AsTask());
+    }
+
+    public Task<T?> FindAsync<T>(Func<T, bool> predicate)
+        where T : class, IEntity
+    {
+        return ExecuteDbContextAsync(db =>
+        {
+            var res = db.Set<T>().Where(predicate).SingleOrDefault();
+            return Task.FromResult(res);
+        });
+    }
+
+
     public async Task InitializeAsync()
     {
         using var scope = _scopeFactory.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ChingContext>();
 
         dbContext.Database.EnsureCreated();
+        await SeedDatabase(dbContext);
     }
 
     public Task DisposeAsync()
     {
         _factory?.Dispose();
         return Task.CompletedTask;
+    }
+
+    public async Task SeedDatabase(ChingContext db)
+    {
+        var acc = new Entities.Account("Seed account");
+        var partition1 = new Entities.AccountPartition("Seed partition 1");
+        var partition2 = new Entities.AccountPartition("Seed partition 2");
+        acc.Partitions.Add(partition1);
+        acc.Partitions.Add(partition2);
+        await db.Accounts.AddAsync(acc);
+
+        var cat1 = new Entities.BudgetCategory("Seed category 1");
+        var cat2 = new Entities.BudgetCategory("Seed category 2");
+        await db.BudgetCategories.AddAsync(cat1);
+        await db.BudgetCategories.AddAsync(cat2);
+
+        await db.SaveChangesAsync();
     }
 }

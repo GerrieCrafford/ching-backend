@@ -9,4 +9,15 @@ public class AccountTransaction : BaseEntity
 
     public int AccountPartitionId { get; set; }
     public AccountPartition AccountPartition { get; set; }
+
+    private AccountTransaction() { }
+
+    public AccountTransaction(DateOnly date, decimal amount, AccountPartition partition, string? note)
+    {
+        Date = date;
+        Amount = amount;
+        AccountPartition = partition;
+        Note = note;
+        BudgetAssignments = new List<BudgetAssignmentTransaction>();
+    }
 }

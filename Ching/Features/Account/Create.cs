@@ -1,4 +1,4 @@
-namespace Ching.Features.BudgetCategory;
+namespace Ching.Features.Account;
 
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,11 +20,11 @@ public class Create
 
         public async Task<int> Handle(Command request, CancellationToken cancellationToken)
         {
-            var budgetCategory = new BudgetCategory(request.Name);
-            await _db.BudgetCategories.AddAsync(budgetCategory, cancellationToken);
+            var account = new Account(request.Name);
+            await _db.Accounts.AddAsync(account, cancellationToken);
             await _db.SaveChangesAsync();
 
-            return budgetCategory.Id;
+            return account.Id;
         }
     }
 }
