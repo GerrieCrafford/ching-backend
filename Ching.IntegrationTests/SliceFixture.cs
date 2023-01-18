@@ -112,6 +112,16 @@ public class SliceFixture : IAsyncLifetime
         });
     }
 
+    public Task<T> GetLast<T>()
+        where T : class, IEntity
+    {
+        return ExecuteDbContextAsync<T>(db =>
+        {
+            var res = db.Set<T>().OrderByDescending(x => x.Id).FirstOrDefault();
+            return Task.FromResult(res);
+        });
+    }
+
 
     public async Task InitializeAsync()
     {

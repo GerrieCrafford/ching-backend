@@ -9,5 +9,7 @@ public class BudgetIncreaseConfiguration : IEntityTypeConfiguration<BudgetIncrea
     public void Configure(EntityTypeBuilder<BudgetIncrease> builder)
     {
         builder.OwnsOne(a => a.BudgetMonth);
+        builder.Navigation(a => a.Transfer).AutoInclude();
+        builder.Navigation(a => a.BudgetCategory).AutoInclude();
     }
 }

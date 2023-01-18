@@ -30,5 +30,6 @@ public class ChingContext : DbContext
         new BudgetAssignmentTransactionConfiguration().Configure(modelBuilder.Entity<BudgetAssignmentTransaction>());
         new BudgetIncreaseConfiguration().Configure(modelBuilder.Entity<BudgetIncrease>());
         new MonthBudgetConfiguration().Configure(modelBuilder.Entity<MonthBudget>());
+        new TransferConfiguration().Configure(modelBuilder.Entity<Transfer>());
     }
 }

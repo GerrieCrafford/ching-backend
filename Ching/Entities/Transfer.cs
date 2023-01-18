@@ -11,5 +11,19 @@ public class Transfer : BaseEntity
     public int DestinationPartitionId { get; set; }
     public AccountPartition DestinationPartition { get; set; }
 
-    public ICollection<BudgetAssignmentTransfer> BudgetAssignments { get; set; }
+    public List<BudgetAssignmentTransfer> BudgetAssignments { get; set; }
+
+    private Transfer() { }
+
+    public Transfer(DateOnly date, decimal amount, AccountPartition source, AccountPartition dest, List<BudgetAssignmentTransfer>? budgetAssignments)
+    {
+        Date = date;
+        Amount = amount;
+        SourcePartition = source;
+        DestinationPartition = dest;
+        BudgetAssignments = budgetAssignments ?? new List<BudgetAssignmentTransfer>();
+    }
+
+    public Transfer(DateOnly date, decimal amount, AccountPartition source, AccountPartition dest)
+    : this(date, amount, source, dest, null) { }
 }

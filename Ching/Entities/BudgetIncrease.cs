@@ -7,4 +7,13 @@ public class BudgetIncrease : BaseEntity
 
     public int BudgetCategoryId { get; set; }
     public BudgetCategory BudgetCategory { get; set; }
+
+    private BudgetIncrease() { }
+
+    public BudgetIncrease(Transfer transfer, BudgetMonth budgetMonth, BudgetCategory budgetCategory)
+    {
+        Transfer = transfer;
+        BudgetMonth = budgetMonth;
+        BudgetCategory = budgetCategory;
+    }
 }
