@@ -9,5 +9,6 @@ public class BudgetAssignmentTransferConfiguration : IEntityTypeConfiguration<Bu
     public void Configure(EntityTypeBuilder<BudgetAssignmentTransfer> builder)
     {
         builder.OwnsOne(a => a.BudgetMonth);
+        builder.Navigation(a => a.BudgetCategory).AutoInclude();
     }
 }

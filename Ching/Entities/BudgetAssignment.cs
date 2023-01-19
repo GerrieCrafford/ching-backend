@@ -6,4 +6,13 @@ public class BudgetAssignment : BaseEntity
     public decimal Amount { get; set; }
     public BudgetCategory BudgetCategory { get; set; }
     public BudgetMonth BudgetMonth { get; set; }
+
+    protected BudgetAssignment() { }
+
+    public BudgetAssignment(BudgetCategory category, decimal amount, BudgetMonth budgetMonth)
+    {
+        BudgetCategory = category;
+        Amount = amount;
+        BudgetMonth = budgetMonth;
+    }
 }

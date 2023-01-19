@@ -10,5 +10,6 @@ public class TransferConfiguration : IEntityTypeConfiguration<Transfer>
     {
         builder.Navigation(a => a.SourcePartition).AutoInclude();
         builder.Navigation(a => a.DestinationPartition).AutoInclude();
+        builder.Navigation(a => a.BudgetAssignment).AutoInclude();
     }
 }

@@ -11,17 +11,17 @@ public class Transfer : BaseEntity
     public int DestinationPartitionId { get; set; }
     public AccountPartition DestinationPartition { get; set; }
 
-    public List<BudgetAssignmentTransfer> BudgetAssignments { get; set; }
+    public BudgetAssignmentTransfer? BudgetAssignment { get; set; }
 
     private Transfer() { }
 
-    public Transfer(DateOnly date, decimal amount, AccountPartition source, AccountPartition dest, List<BudgetAssignmentTransfer>? budgetAssignments)
+    public Transfer(DateOnly date, decimal amount, AccountPartition source, AccountPartition dest, BudgetAssignmentTransfer? budgetAssignment)
     {
         Date = date;
         Amount = amount;
         SourcePartition = source;
         DestinationPartition = dest;
-        BudgetAssignments = budgetAssignments ?? new List<BudgetAssignmentTransfer>();
+        BudgetAssignment = budgetAssignment;
     }
 
     public Transfer(DateOnly date, decimal amount, AccountPartition source, AccountPartition dest)
