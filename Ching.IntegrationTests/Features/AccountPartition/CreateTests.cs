@@ -4,10 +4,10 @@ using Ching.Features.AccountPartition;
 namespace Ching.IntegrationTests.Features.AccountPartition;
 
 [Collection(nameof(SliceFixture))]
-public class CreateTests
+public class CreateTests : BaseTest
 {
     private readonly SliceFixture _fixture;
-    public CreateTests(SliceFixture fixture) => _fixture = fixture;
+    public CreateTests(SliceFixture fixture) : base(fixture) => _fixture = fixture;
 
     [Fact]
     public async Task Should_create_new_account_partition()

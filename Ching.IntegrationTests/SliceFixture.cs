@@ -84,7 +84,28 @@ public class SliceFixture : IAsyncLifetime
         }
     }
 
+    public async Task ExecuteScopeAsync(Func<IServiceProvider, Task> action)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ChingContext>();
+
+        try
+        {
+            await dbContext.Database.BeginTransactionAsync();
+            await action(scope.ServiceProvider);
+            await dbContext.Database.CommitTransactionAsync();
+        }
+        catch (System.Exception)
+        {
+            dbContext.Database.RollbackTransaction();
+            throw;
+        }
+    }
+
     public Task<T> ExecuteDbContextAsync<T>(Func<ChingContext, Task<T>> action)
+        => ExecuteScopeAsync(sp => action(sp.GetService<ChingContext>()));
+
+    public Task ExecuteDbContextAsync(Func<ChingContext, Task> action)
         => ExecuteScopeAsync(sp => action(sp.GetService<ChingContext>()));
 
     public Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
@@ -140,13 +161,28 @@ public class SliceFixture : IAsyncLifetime
         var dbContext = scope.ServiceProvider.GetRequiredService<ChingContext>();
 
         dbContext.Database.EnsureCreated();
-        await SeedDatabase(dbContext);
     }
 
     public Task DisposeAsync()
     {
         _factory?.Dispose();
         return Task.CompletedTask;
+    }
+
+    public async Task ClearDatabase(ChingContext db)
+    {
+        db.Accounts.RemoveRange(db.Accounts);
+        db.AccountPartitions.RemoveRange(db.AccountPartitions);
+        db.AccountTransactions.RemoveRange(db.AccountTransactions);
+        db.BudgetAssignmentsTransactions.RemoveRange(db.BudgetAssignmentsTransactions);
+        db.BudgetAssignmentsTransfers.RemoveRange(db.BudgetAssignmentsTransfers);
+        db.BudgetCategories.RemoveRange(db.BudgetCategories);
+        db.BudgetIncreases.RemoveRange(db.BudgetIncreases);
+        db.MonthBudgets.RemoveRange(db.MonthBudgets);
+        db.Settlements.RemoveRange(db.Settlements);
+        db.Transfers.RemoveRange(db.Transfers);
+
+        await db.SaveChangesAsync();
     }
 
     public async Task SeedDatabase(ChingContext db)

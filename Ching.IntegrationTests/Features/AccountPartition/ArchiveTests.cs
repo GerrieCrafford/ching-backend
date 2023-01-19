@@ -4,10 +4,10 @@ using Ching.Features.AccountPartition;
 namespace Ching.IntegrationTests.Features.AccountPartition;
 
 [Collection(nameof(SliceFixture))]
-public class ArchiveTests
+public class ArchiveTests : BaseTest
 {
     private readonly SliceFixture _fixture;
-    public ArchiveTests(SliceFixture fixture) => _fixture = fixture;
+    public ArchiveTests(SliceFixture fixture) : base(fixture) => _fixture = fixture;
 
     [Fact]
     public async Task Should_archive_partition()
