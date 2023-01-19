@@ -122,6 +122,17 @@ public class SliceFixture : IAsyncLifetime
         });
     }
 
+    public Task<int> InsertAsync<T>(T entity)
+        where T : class, IEntity
+    {
+        return ExecuteDbContextAsync(async db =>
+        {
+            db.Set<T>().Add(entity);
+            await db.SaveChangesAsync();
+            return entity.Id;
+        });
+    }
+
 
     public async Task InitializeAsync()
     {
@@ -140,12 +151,26 @@ public class SliceFixture : IAsyncLifetime
 
     public async Task SeedDatabase(ChingContext db)
     {
-        var acc = new Entities.Account("Seed account");
-        var partition1 = new Entities.AccountPartition("Seed partition 1");
-        var partition2 = new Entities.AccountPartition("Seed partition 2");
-        acc.Partitions.Add(partition1);
-        acc.Partitions.Add(partition2);
-        await db.Accounts.AddAsync(acc);
+        var acc1 = new Entities.Account("ACC1");
+        var acc1part1 = new Entities.AccountPartition("ACC1P1");
+        var acc1part2 = new Entities.AccountPartition("ACC1P2");
+        acc1.Partitions.Add(acc1part1);
+        acc1.Partitions.Add(acc1part2);
+        await db.Accounts.AddAsync(acc1);
+
+        var acc2 = new Entities.Account("ACC2");
+        var acc2part1 = new Entities.AccountPartition("ACC2P1");
+        var acc2part2 = new Entities.AccountPartition("ACC2P2");
+        acc2.Partitions.Add(acc2part1);
+        acc2.Partitions.Add(acc2part2);
+        await db.Accounts.AddAsync(acc2);
+
+        var acc3 = new Entities.Account("ACC3");
+        var acc3part1 = new Entities.AccountPartition("ACC3P1");
+        var acc3part2 = new Entities.AccountPartition("ACC3P2");
+        acc3.Partitions.Add(acc3part1);
+        acc3.Partitions.Add(acc3part2);
+        await db.Accounts.AddAsync(acc3);
 
         var cat1 = new Entities.BudgetCategory("Seed category 1");
         var cat2 = new Entities.BudgetCategory("Seed category 2");

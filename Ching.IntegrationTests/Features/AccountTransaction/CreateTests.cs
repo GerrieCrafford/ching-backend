@@ -12,8 +12,8 @@ public class CreateTests
     [Fact]
     public async Task Should_create_new_account_transaction()
     {
-        var account = await _fixture.FindAsync<Entities.Account>(a => a.Name == "Seed account");
-        var partition = await _fixture.FindAsync<Entities.AccountPartition>(p => p.Name == "Seed partition 1");
+        var account = await _fixture.FindAsync<Entities.Account>(a => a.Name == "ACC1");
+        var partition = await _fixture.FindAsync<Entities.AccountPartition>(p => p.Name == "ACC1P1");
         var cat1 = await _fixture.FindAsync<Entities.BudgetCategory>(x => x.Name == "Seed category 1");
         var cat2 = await _fixture.FindAsync<Entities.BudgetCategory>(x => x.Name == "Seed category 2");
 

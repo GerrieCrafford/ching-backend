@@ -34,7 +34,7 @@ public class Create
         {
             var partition = await _db.AccountPartitions.Where(ap => ap.Id == request.AccountPartitionId).SingleOrDefaultAsync();
             var amount = request.BudgetAssignments.Sum(ba => ba.Amount);
-            var transaction = new AccountTransaction(request.Date, amount, partition, request.Note);
+            var transaction = new AccountTransaction(request.Date, amount, partition.Account, partition, request.Note);
 
             var assignments = request.BudgetAssignments.Select(item => new Entities.BudgetAssignmentTransaction
             {

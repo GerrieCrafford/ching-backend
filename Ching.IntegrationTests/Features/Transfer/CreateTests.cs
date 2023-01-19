@@ -12,8 +12,8 @@ public class CreateTests
     public async Task Should_create_transfer()
     {
         var cat1 = await _fixture.FindAsync<Entities.BudgetCategory>(x => x.Name == "Seed category 1");
-        var part1 = await _fixture.FindAsync<Entities.AccountPartition>(x => x.Name == "Seed partition 1");
-        var part2 = await _fixture.FindAsync<Entities.AccountPartition>(x => x.Name == "Seed partition 2");
+        var part1 = await _fixture.FindAsync<Entities.AccountPartition>(x => x.Name == "ACC1P1");
+        var part2 = await _fixture.FindAsync<Entities.AccountPartition>(x => x.Name == "ACC1P2");
 
         var command = new CreateTransfer.Command
         {
@@ -38,8 +38,8 @@ public class CreateTests
     public async Task Should_create_savings_payment()
     {
         var cat1 = await _fixture.FindAsync<Entities.BudgetCategory>(x => x.Name == "Seed category 1");
-        var part1 = await _fixture.FindAsync<Entities.AccountPartition>(x => x.Name == "Seed partition 1");
-        var part2 = await _fixture.FindAsync<Entities.AccountPartition>(x => x.Name == "Seed partition 2");
+        var part1 = await _fixture.FindAsync<Entities.AccountPartition>(x => x.Name == "ACC1P1");
+        var part2 = await _fixture.FindAsync<Entities.AccountPartition>(x => x.Name == "ACC1P2");
 
         var command = new CreateSavingsPayment.Command
         {

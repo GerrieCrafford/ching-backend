@@ -14,4 +14,12 @@ public class Account : BaseEntity
         Transactions = new List<AccountTransaction>();
         Partitions = new List<AccountPartition> { new AccountPartition("Remaining") };
     }
+
+    public AccountPartition RemainingPartition
+    {
+        get
+        {
+            return Partitions.Where(p => p.Name == "Remaining").First();
+        }
+    }
 }

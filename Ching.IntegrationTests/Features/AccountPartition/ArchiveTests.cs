@@ -12,7 +12,7 @@ public class ArchiveTests
     [Fact]
     public async Task Should_archive_partition()
     {
-        var account = await _fixture.FindAsync<Entities.Account>(a => a.Name == "Seed account");
+        var account = await _fixture.FindAsync<Entities.Account>(a => a.Name == "ACC1");
 
         var command = new Create.Command { Name = "Partition 2 name", AccountId = account.Id };
         var partitionId = await _fixture.SendAsync(command);

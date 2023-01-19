@@ -24,6 +24,7 @@ public class ChingContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        new AccountConfiguration().Configure(modelBuilder.Entity<Account>());
         new AccountPartitionConfiguration().Configure(modelBuilder.Entity<AccountPartition>());
         new AccountTransactionConfiguration().Configure(modelBuilder.Entity<AccountTransaction>());
         new BudgetAssignmentTransferConfiguration().Configure(modelBuilder.Entity<BudgetAssignmentTransfer>());
@@ -31,5 +32,6 @@ public class ChingContext : DbContext
         new BudgetIncreaseConfiguration().Configure(modelBuilder.Entity<BudgetIncrease>());
         new MonthBudgetConfiguration().Configure(modelBuilder.Entity<MonthBudget>());
         new TransferConfiguration().Configure(modelBuilder.Entity<Transfer>());
+        new SettlementConfiguration().Configure(modelBuilder.Entity<Settlement>());
     }
 }
