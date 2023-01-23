@@ -1,3 +1,5 @@
+namespace Ching.Features.Account;
+
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Ching.Data;
