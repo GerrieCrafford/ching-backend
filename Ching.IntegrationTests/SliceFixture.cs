@@ -210,8 +210,10 @@ public class SliceFixture : IAsyncLifetime
 
         var cat1 = new Entities.BudgetCategory("Seed category 1");
         var cat2 = new Entities.BudgetCategory("Seed category 2");
+        var cat3 = new Entities.BudgetCategory("Seed category 3");
         await db.BudgetCategories.AddAsync(cat1);
         await db.BudgetCategories.AddAsync(cat2);
+        await db.BudgetCategories.AddAsync(cat3);
 
         await db.SaveChangesAsync();
     }
