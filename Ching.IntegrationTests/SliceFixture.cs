@@ -182,6 +182,13 @@ public class SliceFixture : IAsyncLifetime
         db.Settlements.RemoveRange(db.Settlements);
         db.Transfers.RemoveRange(db.Transfers);
 
+        // Reset auto-increments
+        var tableNames = new string[] { "Accounts", "AccountPartitions", "AccountTransactions", "BudgetAssignmentTransaciton", "BudgetAssignmentTransfers", "BudgetCategories", "BudgetIncreases", "MonthBudgets", "Settlements", "Transfers" };
+        foreach (var tableName in tableNames)
+        {
+            db.Database.ExecuteSqlRaw($"DELETE FROM SQLITE_SEQUENCE WHERE name='{tableName}'");
+        }
+
         await db.SaveChangesAsync();
     }
 
