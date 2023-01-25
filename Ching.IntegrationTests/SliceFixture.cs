@@ -194,6 +194,7 @@ public class SliceFixture : IAsyncLifetime
 
     public async Task SeedDatabase(ChingContext db)
     {
+        // Accounts
         var acc1 = new Entities.Account("ACC1");
         var acc1part1 = new Entities.AccountPartition("ACC1P1");
         var acc1part2 = new Entities.AccountPartition("ACC1P2");
@@ -215,12 +216,17 @@ public class SliceFixture : IAsyncLifetime
         acc3.Partitions.Add(acc3part2);
         await db.Accounts.AddAsync(acc3);
 
+        // Categories
         var cat1 = new Entities.BudgetCategory("Seed category 1");
         var cat2 = new Entities.BudgetCategory("Seed category 2");
         var cat3 = new Entities.BudgetCategory("Seed category 3");
-        await db.BudgetCategories.AddAsync(cat1);
-        await db.BudgetCategories.AddAsync(cat2);
-        await db.BudgetCategories.AddAsync(cat3);
+        await db.BudgetCategories.AddRangeAsync(cat1, cat2, cat3);
+
+        // Month budgets
+        var mb1 = new Entities.MonthBudget(113, new BudgetMonth(2023, 1), cat1);
+        var mb2 = new Entities.MonthBudget(403, new BudgetMonth(2023, 1), cat2);
+        var mb3 = new Entities.MonthBudget(551, new BudgetMonth(2023, 1), cat3);
+        await db.MonthBudgets.AddRangeAsync(mb1, mb2, mb3);
 
         await db.SaveChangesAsync();
     }
