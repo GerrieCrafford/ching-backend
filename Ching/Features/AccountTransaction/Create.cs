@@ -36,13 +36,13 @@ public class Create
             var amount = request.BudgetAssignments.Sum(ba => ba.Amount);
             var transaction = new AccountTransaction(request.Date, amount, partition.Account, partition, request.Note);
 
-            var assignments = request.BudgetAssignments.Select(item => new Entities.BudgetAssignmentTransaction
+            var assignments = await Task.WhenAll(request.BudgetAssignments.Select(async item =>
             {
-                Amount = item.Amount,
-                BudgetCategoryId = item.BudgetCategoryId,
-                BudgetMonth = item.BudgetMonth,
-            }).ToList();
-            assignments.ForEach(item => transaction.BudgetAssignments.Add(item));
+                var category = await _db.BudgetCategories.FindAsync(item.BudgetCategoryId);
+
+                return new Entities.BudgetAssignmentTransaction(category, item.Amount, item.BudgetMonth);
+            }));
+            transaction.BudgetAssignments.AddRange(assignments);
 
             await _db.AccountTransactions.AddAsync(transaction);
             await _db.SaveChangesAsync();
