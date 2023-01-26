@@ -14,6 +14,7 @@ public class Edit
         public int AccountTransactionId { get; init; }
         public DateOnly Date { get; init; }
         public string? Note { get; init; }
+        public string Recipient { get; init; }
         public ICollection<BudgetAssignment> BudgetAssignments { get; init; }
 
         public record BudgetAssignment
@@ -35,6 +36,7 @@ public class Edit
             var transaction = await _db.AccountTransactions.Include(x => x.BudgetAssignments).FirstOrDefaultAsync(x => x.Id == request.AccountTransactionId);
 
             transaction.Date = request.Date;
+            transaction.Recipient = request.Recipient;
             transaction.Note = request.Note;
             transaction.BudgetAssignments.Clear();
 

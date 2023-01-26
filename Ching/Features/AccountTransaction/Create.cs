@@ -14,6 +14,7 @@ public class Create
         public int AccountPartitionId { get; set; }
         public DateOnly Date { get; set; }
         public decimal Amount { get; set; }
+        public string Recipient { get; set; }
         public string? Note { get; set; }
     }
 
@@ -26,7 +27,7 @@ public class Create
         {
             var accountPartition = await _db.AccountPartitions.FindAsync(request.AccountPartitionId);
 
-            var accountTransaction = new AccountTransaction(request.Date, request.Amount, accountPartition.Account, accountPartition, request.Note);
+            var accountTransaction = new AccountTransaction(request.Date, request.Amount, accountPartition.Account, accountPartition, request.Recipient, request.Note);
 
             await _db.AccountTransactions.AddAsync(accountTransaction);
             await _db.SaveChangesAsync();

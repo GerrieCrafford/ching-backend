@@ -4,6 +4,7 @@ public class AccountTransaction : BaseEntity
 {
     public DateOnly Date { get; set; }
     public Decimal Amount { get; set; }
+    public string Recipient { get; set; }
     public string? Note { get; set; }
     public List<BudgetAssignmentTransaction> BudgetAssignments { get; set; }
 
@@ -15,16 +16,14 @@ public class AccountTransaction : BaseEntity
 
     private AccountTransaction() { }
 
-    public AccountTransaction(DateOnly date, decimal amount, Account account, AccountPartition partition, string? note)
+    public AccountTransaction(DateOnly date, decimal amount, Account account, AccountPartition partition, string recipient, string? note = null)
     {
         Date = date;
         Amount = amount;
         Account = account;
         AccountPartition = partition;
+        Recipient = recipient;
         Note = note;
         BudgetAssignments = new List<BudgetAssignmentTransaction>();
     }
-
-    public AccountTransaction(DateOnly date, decimal amount, Account account, AccountPartition partition)
-    : this(date, amount, account, partition, null) { }
 }

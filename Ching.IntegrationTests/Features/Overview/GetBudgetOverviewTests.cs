@@ -24,6 +24,7 @@ public class GetBudgetOverviewTests : BaseTest
         {
             Date = new DateOnly(),
             AccountPartitionId = 1,
+            Recipient = "Recipient",
             BudgetAssignments = new List<AccountTransactionCreate.Command.BudgetAssignment>
             {
                 new AccountTransactionCreate.Command.BudgetAssignment { Amount = 112m, BudgetCategoryId = 1, BudgetMonth = new Entities.BudgetMonth(2023, 1)},
@@ -36,6 +37,7 @@ public class GetBudgetOverviewTests : BaseTest
         {
             Date = new DateOnly(),
             AccountPartitionId = 1,
+            Recipient = "Recipient",
             BudgetAssignments = new List<AccountTransactionCreate.Command.BudgetAssignment>
             {
                 new AccountTransactionCreate.Command.BudgetAssignment { Amount = 982m, BudgetCategoryId = 2, BudgetMonth = new Entities.BudgetMonth(2023, 1)},

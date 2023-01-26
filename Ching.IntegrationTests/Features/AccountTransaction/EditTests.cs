@@ -21,6 +21,7 @@ public class EditTests : BaseTest
         {
             AccountPartitionId = partition.Id,
             Date = new DateOnly(2023, 1, 5),
+            Recipient = "Recipient 2",
             BudgetAssignments = new List<CreateFromBudgetAssignments.Command.BudgetAssignment> {
                 new CreateFromBudgetAssignments.Command.BudgetAssignment { Amount = 105.5m, BudgetCategoryId = cat1.Id, BudgetMonth = new Entities.BudgetMonth(2023, 1) },
                 new CreateFromBudgetAssignments.Command.BudgetAssignment { Amount = 100m, BudgetCategoryId = cat2.Id, BudgetMonth = new Entities.BudgetMonth(2023, 1) }
@@ -35,6 +36,7 @@ public class EditTests : BaseTest
             BudgetAssignments = new List<Edit.Command.BudgetAssignment> {
                 new Edit.Command.BudgetAssignment { Amount = 205.5m, BudgetCategoryId = cat2.Id, BudgetMonth = new Entities.BudgetMonth(2023, 2) },
             },
+            Recipient = "Recipient 2",
             Note = "Test note"
         };
         await _fixture.SendAsync(editCommand);
@@ -43,6 +45,7 @@ public class EditTests : BaseTest
 
         edited.ShouldNotBeNull();
         edited.Date.ShouldBeEquivalentTo(new DateOnly(2023, 3, 6));
+        edited.Recipient.ShouldBe("Recipient 2");
         edited.Note.ShouldBe("Test note");
         edited.BudgetAssignments.Count.ShouldBe(1);
         edited.BudgetAssignments[0].Amount.ShouldBe(205.5m);

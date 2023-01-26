@@ -22,7 +22,8 @@ public class CreateTests : BaseTest
             AccountPartitionId = partition.Id,
             Date = new DateOnly(2023, 1, 5),
             Amount = 13.5m,
-            Note = "Some note"
+            Recipient = "Recipient test",
+            Note = "Some note",
         };
         var transactionId = await _fixture.SendAsync(command);
 
@@ -33,6 +34,7 @@ public class CreateTests : BaseTest
         created.AccountPartition.Id.ShouldBe(partition.Id);
         created.Amount.ShouldBe(13.5m);
         created.Date.ShouldBeEquivalentTo(new DateOnly(2023, 1, 5));
+        created.Recipient.ShouldBe("Recipient test");
         created.Note.ShouldBe("Some note");
     }
 }

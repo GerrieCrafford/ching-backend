@@ -13,6 +13,7 @@ public class CreateFromBudgetAssignments
     {
         public int AccountPartitionId { get; set; }
         public DateOnly Date { get; set; }
+        public string Recipient { get; set; }
         public ICollection<BudgetAssignment> BudgetAssignments { get; set; }
 
         public record BudgetAssignment
@@ -33,7 +34,7 @@ public class CreateFromBudgetAssignments
         {
             var partition = await _db.AccountPartitions.Where(ap => ap.Id == request.AccountPartitionId).SingleOrDefaultAsync();
             var amount = request.BudgetAssignments.Sum(ba => ba.Amount);
-            var transaction = new AccountTransaction(request.Date, amount, partition.Account, partition);
+            var transaction = new AccountTransaction(request.Date, amount, partition.Account, partition, request.Recipient);
 
             var assignments = await Task.WhenAll(request.BudgetAssignments.Select(async item =>
             {

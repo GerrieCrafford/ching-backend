@@ -21,6 +21,7 @@ public class CreateFromBudgetAssignmentsTests : BaseTest
         {
             AccountPartitionId = partition.Id,
             Date = new DateOnly(2023, 1, 5),
+            Recipient = "Test recipient",
             BudgetAssignments = new List<CreateFromBudgetAssignments.Command.BudgetAssignment> {
                 new CreateFromBudgetAssignments.Command.BudgetAssignment { Amount = 105.5m, BudgetCategoryId = cat1.Id, BudgetMonth = new Entities.BudgetMonth(2023, 1), Note = "Test note" },
                 new CreateFromBudgetAssignments.Command.BudgetAssignment { Amount = 100m, BudgetCategoryId = cat2.Id, BudgetMonth = new Entities.BudgetMonth(2023, 1) }
@@ -34,6 +35,7 @@ public class CreateFromBudgetAssignmentsTests : BaseTest
         created.Id.ShouldBe(transactionId);
         created.AccountPartition.Id.ShouldBe(partition.Id);
         created.Amount.ShouldBe(205.5m);
+        created.Recipient.ShouldBe("Test recipient");
         created.Date.ShouldBeEquivalentTo(new DateOnly(2023, 1, 5));
 
         created.BudgetAssignments.Count.ShouldBe(2);

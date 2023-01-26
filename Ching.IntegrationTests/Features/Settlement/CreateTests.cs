@@ -20,9 +20,9 @@ public class CreateTests : BaseTest
 
             var partSource = await db.AccountPartitions.Where(x => x.Name == "ACC3P1").FirstOrDefaultAsync();
 
-            var transaction1 = new Entities.AccountTransaction(new DateOnly(2023, 1, 1), 101.1m, acc1part1.Account, acc1part1);
-            var transaction2 = new Entities.AccountTransaction(new DateOnly(2023, 1, 1), 202.2m, acc1part2.Account, acc1part2);
-            var transaction3 = new Entities.AccountTransaction(new DateOnly(2023, 1, 1), 303.3m, acc2part1.Account, acc2part1);
+            var transaction1 = new Entities.AccountTransaction(new DateOnly(2023, 1, 1), 101.1m, acc1part1.Account, acc1part1, "Recipient 1");
+            var transaction2 = new Entities.AccountTransaction(new DateOnly(2023, 1, 1), 202.2m, acc1part2.Account, acc1part2, "Recipient 2");
+            var transaction3 = new Entities.AccountTransaction(new DateOnly(2023, 1, 1), 303.3m, acc2part1.Account, acc2part1, "Recipient 3");
             db.AccountTransactions.Add(transaction1);
             db.AccountTransactions.Add(transaction2);
             db.AccountTransactions.Add(transaction3);

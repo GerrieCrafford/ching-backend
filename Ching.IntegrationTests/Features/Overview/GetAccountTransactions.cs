@@ -40,7 +40,8 @@ public class GetAccountTransactionsTests : BaseTest
             {
                 Date = date,
                 AccountPartitionId = accountPartitionId,
-                Amount = amount
+                Amount = amount,
+                Recipient = "Recipient"
             });
         }
     }
