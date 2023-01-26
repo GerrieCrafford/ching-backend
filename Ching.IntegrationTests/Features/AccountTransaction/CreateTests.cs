@@ -21,36 +21,18 @@ public class CreateTests : BaseTest
         {
             AccountPartitionId = partition.Id,
             Date = new DateOnly(2023, 1, 5),
-            BudgetAssignments = new List<Create.Command.BudgetAssignment> {
-                new Create.Command.BudgetAssignment { Amount = 105.5m, BudgetCategoryId = cat1.Id, BudgetMonth = new Entities.BudgetMonth(2023, 1) },
-                new Create.Command.BudgetAssignment { Amount = 100m, BudgetCategoryId = cat2.Id, BudgetMonth = new Entities.BudgetMonth(2023, 1) }
-            },
-            Note = "Test note"
+            Amount = 13.5m,
+            Note = "Some note"
         };
         var transactionId = await _fixture.SendAsync(command);
 
-        var created = await _fixture.ExecuteDbContextAsync(db => db.AccountTransactions.Where(trans => trans.Id == transactionId).Include(trans => trans.BudgetAssignments).SingleOrDefaultAsync());
+        var created = await _fixture.ExecuteDbContextAsync(db => db.AccountTransactions.Where(trans => trans.Id == transactionId).SingleOrDefaultAsync());
 
         created.ShouldNotBeNull();
         created.Id.ShouldBe(transactionId);
         created.AccountPartition.Id.ShouldBe(partition.Id);
-        created.Amount.ShouldBe(205.5m);
+        created.Amount.ShouldBe(13.5m);
         created.Date.ShouldBeEquivalentTo(new DateOnly(2023, 1, 5));
-        created.Note.ShouldBe("Test note");
-
-        created.BudgetAssignments.Count.ShouldBe(2);
-
-        var ba1 = created.BudgetAssignments.ElementAt(0);
-        var ba2 = created.BudgetAssignments.ElementAt(1);
-
-        ba1.ShouldNotBeNull();
-        ba1.Amount.ShouldBe(105.5m);
-        ba1.BudgetCategoryId.ShouldBe(cat1.Id);
-        ba1.BudgetMonth.ShouldBeEquivalentTo(new Entities.BudgetMonth(2023, 1));
-
-        ba2.ShouldNotBeNull();
-        ba2.Amount.ShouldBe(100m);
-        ba2.BudgetCategoryId.ShouldBe(cat2.Id);
-        ba2.BudgetMonth.ShouldBeEquivalentTo(new Entities.BudgetMonth(2023, 1));
+        created.Note.ShouldBe("Some note");
     }
 }

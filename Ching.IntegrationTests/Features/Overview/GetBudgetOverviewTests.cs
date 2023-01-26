@@ -1,5 +1,5 @@
 using Ching.Features.Overview;
-using AccountTransactionCreate = Ching.Features.AccountTransaction.Create;
+using AccountTransactionCreate = Ching.Features.AccountTransaction.CreateFromBudgetAssignments;
 using TransferCreateSavingsPayment = Ching.Features.Transfer.CreateSavingsPayment;
 using BudgetIncreaseCreate = Ching.Features.BudgetIncrease.Create;
 using Microsoft.EntityFrameworkCore;

@@ -17,13 +17,13 @@ public class EditTests : BaseTest
         var cat1 = await _fixture.FindAsync<Entities.BudgetCategory>(x => x.Name == "Seed category 1");
         var cat2 = await _fixture.FindAsync<Entities.BudgetCategory>(x => x.Name == "Seed category 2");
 
-        var command = new Create.Command
+        var command = new CreateFromBudgetAssignments.Command
         {
             AccountPartitionId = partition.Id,
             Date = new DateOnly(2023, 1, 5),
-            BudgetAssignments = new List<Create.Command.BudgetAssignment> {
-                new Create.Command.BudgetAssignment { Amount = 105.5m, BudgetCategoryId = cat1.Id, BudgetMonth = new Entities.BudgetMonth(2023, 1) },
-                new Create.Command.BudgetAssignment { Amount = 100m, BudgetCategoryId = cat2.Id, BudgetMonth = new Entities.BudgetMonth(2023, 1) }
+            BudgetAssignments = new List<CreateFromBudgetAssignments.Command.BudgetAssignment> {
+                new CreateFromBudgetAssignments.Command.BudgetAssignment { Amount = 105.5m, BudgetCategoryId = cat1.Id, BudgetMonth = new Entities.BudgetMonth(2023, 1) },
+                new CreateFromBudgetAssignments.Command.BudgetAssignment { Amount = 100m, BudgetCategoryId = cat2.Id, BudgetMonth = new Entities.BudgetMonth(2023, 1) }
             },
         };
         var transactionId = await _fixture.SendAsync(command);

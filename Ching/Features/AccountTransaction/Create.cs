@@ -13,16 +13,8 @@ public class Create
     {
         public int AccountPartitionId { get; set; }
         public DateOnly Date { get; set; }
+        public decimal Amount { get; set; }
         public string? Note { get; set; }
-        public ICollection<BudgetAssignment> BudgetAssignments { get; set; }
-
-        public record BudgetAssignment
-        {
-            public int BudgetCategoryId { get; set; }
-            public BudgetMonth BudgetMonth { get; set; }
-            public Decimal Amount { get; set; }
-            public string? Note { get; set; }
-        }
     }
 
     public class Handler : IRequestHandler<Command, int>
@@ -32,22 +24,14 @@ public class Create
 
         public async Task<int> Handle(Command request, CancellationToken cancellationToken)
         {
-            var partition = await _db.AccountPartitions.Where(ap => ap.Id == request.AccountPartitionId).SingleOrDefaultAsync();
-            var amount = request.BudgetAssignments.Sum(ba => ba.Amount);
-            var transaction = new AccountTransaction(request.Date, amount, partition.Account, partition, request.Note);
+            var accountPartition = await _db.AccountPartitions.FindAsync(request.AccountPartitionId);
 
-            var assignments = await Task.WhenAll(request.BudgetAssignments.Select(async item =>
-            {
-                var category = await _db.BudgetCategories.FindAsync(item.BudgetCategoryId);
+            var accountTransaction = new AccountTransaction(request.Date, request.Amount, accountPartition.Account, accountPartition, request.Note);
 
-                return new Entities.BudgetAssignmentTransaction(category, item.Amount, item.BudgetMonth);
-            }));
-            transaction.BudgetAssignments.AddRange(assignments);
-
-            await _db.AccountTransactions.AddAsync(transaction);
+            await _db.AccountTransactions.AddAsync(accountTransaction);
             await _db.SaveChangesAsync();
 
-            return transaction.Id;
+            return accountTransaction.Id;
         }
     }
 }
