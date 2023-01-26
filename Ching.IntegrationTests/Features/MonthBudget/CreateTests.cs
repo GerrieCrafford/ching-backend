@@ -10,7 +10,7 @@ public class CreateTests : BaseTest
     public CreateTests(SliceFixture fixture) : base(fixture) => _fixture = fixture;
 
     [Fact]
-    public async Task Should_create_budget_increase()
+    public async Task Should_create_month_budget()
     {
         var cat1 = await _fixture.FindAsync<Entities.BudgetCategory>(x => x.Name == "Seed category 1");
 
