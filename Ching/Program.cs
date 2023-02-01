@@ -1,12 +1,10 @@
 using MediatR;
 using Ching.Data;
+using Ching.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(typeof(Program));
@@ -21,11 +19,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection();
+// app.UseAuthorization();
 
-app.UseAuthorization();
-
-app.MapControllers();
+app.MapGroup("/account").MapAccountsApi();
 
 app.Run();
 

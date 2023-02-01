@@ -44,9 +44,9 @@ namespace Ching.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Type = table.Column<string>(type: "TEXT", nullable: false),
-                    BudgetMonthYear = table.Column<int>(name: "BudgetMonth_Year", type: "INTEGER", nullable: false),
-                    BudgetMonthMonth = table.Column<int>(name: "BudgetMonth_Month", type: "INTEGER", nullable: false),
+                    Archived = table.Column<bool>(type: "INTEGER", nullable: false),
+                    BudgetMonthYear = table.Column<int>(name: "BudgetMonth_Year", type: "INTEGER", nullable: true),
+                    BudgetMonthMonth = table.Column<int>(name: "BudgetMonth_Month", type: "INTEGER", nullable: true),
                     AccountId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -56,6 +56,29 @@ namespace Ching.Migrations
                         name: "FK_AccountPartitions_Accounts_AccountId",
                         column: x => x.AccountId,
                         principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BudgetAssignmentsTransfers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    BudgetCategoryId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Amount = table.Column<decimal>(type: "TEXT", nullable: false),
+                    Note = table.Column<string>(type: "TEXT", nullable: true),
+                    BudgetMonthYear = table.Column<int>(name: "BudgetMonth_Year", type: "INTEGER", nullable: false),
+                    BudgetMonthMonth = table.Column<int>(name: "BudgetMonth_Month", type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BudgetAssignmentsTransfers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BudgetAssignmentsTransfers_BudgetCategories_BudgetCategoryId",
+                        column: x => x.BudgetCategoryId,
+                        principalTable: "BudgetCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -91,7 +114,8 @@ namespace Ching.Migrations
                     Date = table.Column<DateOnly>(type: "TEXT", nullable: false),
                     Amount = table.Column<decimal>(type: "TEXT", nullable: false),
                     SourcePartitionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DestinationPartitionId = table.Column<int>(type: "INTEGER", nullable: false)
+                    DestinationPartitionId = table.Column<int>(type: "INTEGER", nullable: false),
+                    BudgetAssignmentId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -108,32 +132,10 @@ namespace Ching.Migrations
                         principalTable: "AccountPartitions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "BudgetAssignmentsTransfers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    TransferId = table.Column<int>(type: "INTEGER", nullable: true),
-                    BudgetCategoryId = table.Column<int>(type: "INTEGER", nullable: false),
-                    BudgetMonthYear = table.Column<int>(name: "BudgetMonth_Year", type: "INTEGER", nullable: false),
-                    BudgetMonthMonth = table.Column<int>(name: "BudgetMonth_Month", type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BudgetAssignmentsTransfers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BudgetAssignmentsTransfers_BudgetCategories_BudgetCategoryId",
-                        column: x => x.BudgetCategoryId,
-                        principalTable: "BudgetCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_BudgetAssignmentsTransfers_Transfers_TransferId",
-                        column: x => x.TransferId,
-                        principalTable: "Transfers",
+                        name: "FK_Transfers_BudgetAssignmentsTransfers_BudgetAssignmentId",
+                        column: x => x.BudgetAssignmentId,
+                        principalTable: "BudgetAssignmentsTransfers",
                         principalColumn: "Id");
                 });
 
@@ -193,9 +195,10 @@ namespace Ching.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Date = table.Column<DateOnly>(type: "TEXT", nullable: false),
                     Amount = table.Column<decimal>(type: "TEXT", nullable: false),
+                    Recipient = table.Column<string>(type: "TEXT", nullable: false),
                     Note = table.Column<string>(type: "TEXT", nullable: true),
                     AccountPartitionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    AccountId = table.Column<int>(type: "INTEGER", nullable: true),
+                    AccountId = table.Column<int>(type: "INTEGER", nullable: false),
                     SettlementId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
@@ -211,7 +214,8 @@ namespace Ching.Migrations
                         name: "FK_AccountTransactions_Accounts_AccountId",
                         column: x => x.AccountId,
                         principalTable: "Accounts",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AccountTransactions_Settlements_SettlementId",
                         column: x => x.SettlementId,
@@ -227,6 +231,8 @@ namespace Ching.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     AccountTransactionId = table.Column<int>(type: "INTEGER", nullable: true),
                     BudgetCategoryId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Amount = table.Column<decimal>(type: "TEXT", nullable: false),
+                    Note = table.Column<string>(type: "TEXT", nullable: true),
                     BudgetMonthYear = table.Column<int>(name: "BudgetMonth_Year", type: "INTEGER", nullable: false),
                     BudgetMonthMonth = table.Column<int>(name: "BudgetMonth_Month", type: "INTEGER", nullable: false)
                 },
@@ -282,11 +288,6 @@ namespace Ching.Migrations
                 column: "BudgetCategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BudgetAssignmentsTransfers_TransferId",
-                table: "BudgetAssignmentsTransfers",
-                column: "TransferId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_BudgetIncreases_BudgetCategoryId",
                 table: "BudgetIncreases",
                 column: "BudgetCategoryId");
@@ -307,6 +308,11 @@ namespace Ching.Migrations
                 column: "TransferId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Transfers_BudgetAssignmentId",
+                table: "Transfers",
+                column: "BudgetAssignmentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Transfers_DestinationPartitionId",
                 table: "Transfers",
                 column: "DestinationPartitionId");
@@ -324,9 +330,6 @@ namespace Ching.Migrations
                 name: "BudgetAssignmentsTransactions");
 
             migrationBuilder.DropTable(
-                name: "BudgetAssignmentsTransfers");
-
-            migrationBuilder.DropTable(
                 name: "BudgetIncreases");
 
             migrationBuilder.DropTable(
@@ -334,9 +337,6 @@ namespace Ching.Migrations
 
             migrationBuilder.DropTable(
                 name: "AccountTransactions");
-
-            migrationBuilder.DropTable(
-                name: "BudgetCategories");
 
             migrationBuilder.DropTable(
                 name: "Settlements");
@@ -348,7 +348,13 @@ namespace Ching.Migrations
                 name: "AccountPartitions");
 
             migrationBuilder.DropTable(
+                name: "BudgetAssignmentsTransfers");
+
+            migrationBuilder.DropTable(
                 name: "Accounts");
+
+            migrationBuilder.DropTable(
+                name: "BudgetCategories");
         }
     }
 }

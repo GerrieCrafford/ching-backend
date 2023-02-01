@@ -41,11 +41,10 @@ namespace Ching.Migrations
                     b.Property<int>("AccountId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<bool>("Archived")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("Type")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -62,7 +61,7 @@ namespace Ching.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("AccountId")
+                    b.Property<int>("AccountId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("AccountPartitionId")
@@ -75,6 +74,10 @@ namespace Ching.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Note")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Recipient")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("SettlementId")
@@ -100,8 +103,14 @@ namespace Ching.Migrations
                     b.Property<int?>("AccountTransactionId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("BudgetCategoryId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -118,17 +127,18 @@ namespace Ching.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("BudgetCategoryId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("TransferId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Note")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BudgetCategoryId");
-
-                    b.HasIndex("TransferId");
 
                     b.ToTable("BudgetAssignmentsTransfers");
                 });
@@ -216,6 +226,9 @@ namespace Ching.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("BudgetAssignmentId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateOnly>("Date")
                         .HasColumnType("TEXT");
 
@@ -226,6 +239,8 @@ namespace Ching.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BudgetAssignmentId");
 
                     b.HasIndex("DestinationPartitionId");
 
@@ -263,15 +278,16 @@ namespace Ching.Migrations
 
                     b.Navigation("Account");
 
-                    b.Navigation("BudgetMonth")
-                        .IsRequired();
+                    b.Navigation("BudgetMonth");
                 });
 
             modelBuilder.Entity("Ching.Entities.AccountTransaction", b =>
                 {
-                    b.HasOne("Ching.Entities.Account", null)
+                    b.HasOne("Ching.Entities.Account", "Account")
                         .WithMany("Transactions")
-                        .HasForeignKey("AccountId");
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Ching.Entities.AccountPartition", "AccountPartition")
                         .WithMany()
@@ -282,6 +298,8 @@ namespace Ching.Migrations
                     b.HasOne("Ching.Entities.Settlement", null)
                         .WithMany("AccountTransactions")
                         .HasForeignKey("SettlementId");
+
+                    b.Navigation("Account");
 
                     b.Navigation("AccountPartition");
                 });
@@ -330,10 +348,6 @@ namespace Ching.Migrations
                         .HasForeignKey("BudgetCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Ching.Entities.Transfer", null)
-                        .WithMany("BudgetAssignments")
-                        .HasForeignKey("TransferId");
 
                     b.OwnsOne("Ching.Entities.BudgetMonth", "BudgetMonth", b1 =>
                         {
@@ -447,6 +461,10 @@ namespace Ching.Migrations
 
             modelBuilder.Entity("Ching.Entities.Transfer", b =>
                 {
+                    b.HasOne("Ching.Entities.BudgetAssignmentTransfer", "BudgetAssignment")
+                        .WithMany()
+                        .HasForeignKey("BudgetAssignmentId");
+
                     b.HasOne("Ching.Entities.AccountPartition", "DestinationPartition")
                         .WithMany()
                         .HasForeignKey("DestinationPartitionId")
@@ -458,6 +476,8 @@ namespace Ching.Migrations
                         .HasForeignKey("SourcePartitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("BudgetAssignment");
 
                     b.Navigation("DestinationPartition");
 
@@ -479,11 +499,6 @@ namespace Ching.Migrations
             modelBuilder.Entity("Ching.Entities.Settlement", b =>
                 {
                     b.Navigation("AccountTransactions");
-                });
-
-            modelBuilder.Entity("Ching.Entities.Transfer", b =>
-                {
-                    b.Navigation("BudgetAssignments");
                 });
 #pragma warning restore 612, 618
         }
