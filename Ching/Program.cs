@@ -1,6 +1,8 @@
 using MediatR;
 using Ching.Data;
-using Ching.Api;
+
+using Ching.Features.Account;
+using Ching.Features.AccountPartition;
 
 var builder = WebApplication.CreateBuilder(args);
 

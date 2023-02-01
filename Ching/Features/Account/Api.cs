@@ -1,8 +1,7 @@
 using MediatR;
 using Ching.DTOs;
-using Ching.Features.Account;
 
-namespace Ching.Api;
+namespace Ching.Features.Account;
 
 public static class AccountsEndpoints
 {

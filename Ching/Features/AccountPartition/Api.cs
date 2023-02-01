@@ -1,9 +1,8 @@
 using MediatR;
 using Ching.DTOs;
-using Ching.Features.AccountPartition;
 using AutoMapper;
 
-namespace Ching.Api;
+namespace Ching.Features.AccountPartition;
 
 public static class AccountPartitionsEndpoints
 {
