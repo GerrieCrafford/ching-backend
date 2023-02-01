@@ -9,6 +9,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(typeof(Program));
 builder.Services.AddSqlite<ChingContext>("Data Source=Ching.db");
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 
@@ -22,6 +23,7 @@ if (app.Environment.IsDevelopment())
 // app.UseAuthorization();
 
 app.MapGroup("/account").MapAccountsApi();
+app.MapGroup("/account/{accountId}/partition").MapAccountPartitionsApi();
 
 app.Run();
 
