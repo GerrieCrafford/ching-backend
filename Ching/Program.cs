@@ -3,6 +3,7 @@ using Ching.Data;
 
 using Ching.Features.Account;
 using Ching.Features.AccountPartition;
+using Ching.Features.AccountTransaction;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapGroup("/account").MapAccountsApi();
 app.MapGroup("/account/{accountId}/partition").MapAccountPartitionsApi();
+app.MapGroup("/account-transaction").MapAccountTransactionsApi();
 
 app.Run();
 

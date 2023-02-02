@@ -11,7 +11,7 @@ public class Edit
 {
     public record Command : IRequest
     {
-        public int AccountTransactionId { get; init; }
+        public int AccountTransactionId { get; set; }
         public DateOnly Date { get; init; }
         public string? Note { get; init; }
         public string Recipient { get; init; }
