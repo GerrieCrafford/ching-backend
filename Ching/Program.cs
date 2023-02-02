@@ -5,6 +5,7 @@ using Ching.Features.Account;
 using Ching.Features.AccountPartition;
 using Ching.Features.AccountTransaction;
 using Ching.Features.BudgetCategory;
+using Ching.Features.BudgetIncrease;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,7 @@ app.MapGroup("/account").MapAccountsApi();
 app.MapGroup("/account/{accountId}/partition").MapAccountPartitionsApi();
 app.MapGroup("/account-transaction").MapAccountTransactionsApi();
 app.MapGroup("/budget-category").MapBudgetCategoriesApi();
+app.MapGroup("/budget-increase").MapBudgetIncreasesApi();
 
 app.Run();
 
