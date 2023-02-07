@@ -9,6 +9,7 @@ using Ching.Features.BudgetIncrease;
 using Ching.Features.MonthBudget;
 using Ching.Features.Overview;
 using Ching.Features.Settlement;
+using Ching.Features.Transfer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,7 @@ app.MapGroup("/budget-increase").MapBudgetIncreasesApi();
 app.MapGroup("/month-budget").MapMonthBudgetsEndpoints();
 app.MapGroup("/overview").MapOverviewEndpoints();
 app.MapGroup("/settlement").MapSettlementEndpoints();
+app.MapGroup("/transfer").MapTransferEndpoints();
 
 app.Run();
 
