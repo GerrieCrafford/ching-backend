@@ -7,6 +7,7 @@ using Ching.Features.AccountTransaction;
 using Ching.Features.BudgetCategory;
 using Ching.Features.BudgetIncrease;
 using Ching.Features.MonthBudget;
+using Ching.Features.Overview;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,7 @@ app.MapGroup("/account-transaction").MapAccountTransactionsApi();
 app.MapGroup("/budget-category").MapBudgetCategoriesApi();
 app.MapGroup("/budget-increase").MapBudgetIncreasesApi();
 app.MapGroup("/month-budget").MapMonthBudgetsEndpoints();
+app.MapGroup("/overview").MapOverviewEndpoints();
 
 app.Run();
 
