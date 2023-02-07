@@ -10,6 +10,7 @@ using Ching.Features.MonthBudget;
 using Ching.Features.Overview;
 using Ching.Features.Settlement;
 using Ching.Features.Transfer;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(typeof(Program));
 builder.Services.AddSqlite<ChingContext>("Data Source=Ching.db");
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 var app = builder.Build();
 
