@@ -21,7 +21,7 @@ public static class BudgetCategoriesEndpoints
 
     public class MappingProfile : Profile
     {
-        MappingProfile()
+        public MappingProfile()
         {
             CreateMap<CreateBudgetCategoryRequest, Create.Command>();
         }

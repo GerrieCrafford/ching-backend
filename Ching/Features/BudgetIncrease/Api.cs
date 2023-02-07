@@ -21,7 +21,7 @@ public static class BudgetIncreases
 
     public class MappingProfile : Profile
     {
-        MappingProfile()
+        public MappingProfile()
         {
             CreateMap<CreateBudgetIncreaseRequest, Create.Command>();
             CreateMap<CreateBudgetIncreaseTransferRequest, Create.Command.TransferData>();

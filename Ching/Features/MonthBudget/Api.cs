@@ -31,7 +31,7 @@ public static class MonthBudgetsEndpoints
 
     public class MappingProfile : Profile
     {
-        MappingProfile()
+        public MappingProfile()
         {
             CreateMap<CreateMonthBudgetRequest, Create.Command>();
         }

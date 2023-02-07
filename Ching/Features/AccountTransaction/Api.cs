@@ -45,7 +45,7 @@ public static class AccountTransactionsEndpoints
 
     public class MappingProfile : Profile
     {
-        MappingProfile()
+        public MappingProfile()
         {
             CreateMap<CreateBudgetAssignmentRequest, CreateFromBudgetAssignments.Command.BudgetAssignment>();
             CreateMap<CreateAccountTransactionFromAssignmentsRequest, CreateFromBudgetAssignments.Command>();
