@@ -37,6 +37,7 @@ public class CreateTests : BaseTest
         await _fixture.SendAsync(command);
 
         var transfer = await _fixture.GetLast<Entities.Transfer>();
+        transfer.ShouldNotBeNull();
 
         transfer.Amount.ShouldBe(130m);
         transfer.Date.ShouldBeEquivalentTo(new DateOnly(2023, 2, 14));
@@ -44,6 +45,7 @@ public class CreateTests : BaseTest
         transfer.DestinationPartition.Id.ShouldBe(partition2.Id);
 
         var increase = await _fixture.GetLast<Entities.BudgetIncrease>();
+        increase.ShouldNotBeNull();
 
         increase.BudgetCategory.Id.ShouldBe(cat1.Id);
         increase.Transfer.Id.ShouldBe(transfer.Id);

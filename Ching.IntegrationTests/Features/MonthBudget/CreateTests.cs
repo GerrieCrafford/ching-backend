@@ -25,6 +25,7 @@ public class CreateTests : BaseTest
         var monthBudgetId = await _fixture.SendAsync(command);
 
         var monthBudget = await _fixture.GetLast<Entities.MonthBudget>();
+        monthBudget.ShouldNotBeNull();
 
         monthBudget.Id.ShouldBe(monthBudgetId);
         monthBudget.BudgetCategory.Id.ShouldBe(cat1.Id);

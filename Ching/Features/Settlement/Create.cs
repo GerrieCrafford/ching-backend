@@ -30,6 +30,10 @@ public class Create
         public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
         {
             var source = await _db.AccountPartitions.Where(x => x.Id == request.SourcePartitionId).SingleOrDefaultAsync();
+
+            if (source == null)
+                throw new DomainException("Source parition does not exist.");
+
             var accountTransactions = _db.AccountTransactions.Where(x => request.AccountTransactionIds.Contains(x.Id));
 
             var query = from at in accountTransactions

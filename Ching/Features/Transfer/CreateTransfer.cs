@@ -31,6 +31,12 @@ public class CreateTransfer
             var source = await _db.AccountPartitions.Where(x => x.Id == request.SourcePartitionId).SingleOrDefaultAsync();
             var dest = await _db.AccountPartitions.Where(x => x.Id == request.DestinationPartitionId).SingleOrDefaultAsync();
 
+            if (source == null)
+                throw new DomainException("Source partition does not exist.");
+
+            if (dest == null)
+                throw new DomainException("Destination partition does not exist.");
+
             var transfer = new Transfer(request.Date, request.Amount, source, dest);
 
             await _db.Transfers.AddAsync(transfer);

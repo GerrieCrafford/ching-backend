@@ -23,6 +23,7 @@ public class CreateTests : BaseTest
         var transferId = await _fixture.SendAsync(command);
 
         var transfer = await _fixture.GetLast<Entities.Transfer>();
+        transfer.ShouldNotBeNull();
 
         transfer.Id.ShouldBe(transferId);
         transfer.Amount.ShouldBe(121.64m);
@@ -60,6 +61,7 @@ public class CreateTests : BaseTest
         var transferId = await _fixture.SendAsync(command);
 
         var transfer = await _fixture.GetLast<Entities.Transfer>();
+        transfer.ShouldNotBeNull();
 
         transfer.Id.ShouldBe(transferId);
         transfer.Amount.ShouldBe(992.4m);

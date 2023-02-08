@@ -16,7 +16,6 @@ public class SliceFixtureCollection : ICollectionFixture<SliceFixture> { }
 
 public class SliceFixture : IAsyncLifetime
 {
-    private readonly IConfiguration _configuration;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly WebApplicationFactory<Program> _factory;
 
@@ -37,13 +36,15 @@ public class SliceFixture : IAsyncLifetime
                     d => d.ServiceType ==
                         typeof(DbContextOptions<ChingContext>));
 
-                services.Remove(dbContextDescriptor);
+                if (dbContextDescriptor != null)
+                    services.Remove(dbContextDescriptor);
 
-                var dbConnectionDescriptor = services.SingleOrDefault(
+                var dbConnection = services.SingleOrDefault(
                     d => d.ServiceType ==
                         typeof(DbConnection));
 
-                services.Remove(dbConnectionDescriptor);
+                if (dbConnection != null)
+                    services.Remove(dbConnection);
 
                 // Create open SqliteConnection so EF won't automatically close it.
                 services.AddSingleton<DbConnection>(container =>
@@ -103,10 +104,10 @@ public class SliceFixture : IAsyncLifetime
     }
 
     public Task<T> ExecuteDbContextAsync<T>(Func<ChingContext, Task<T>> action)
-        => ExecuteScopeAsync(sp => action(sp.GetService<ChingContext>()));
+        => ExecuteScopeAsync(sp => action(sp.GetService<ChingContext>()!));
 
     public Task ExecuteDbContextAsync(Func<ChingContext, Task> action)
-        => ExecuteScopeAsync(sp => action(sp.GetService<ChingContext>()));
+        => ExecuteScopeAsync(sp => action(sp.GetService<ChingContext>()!));
 
     public Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
     {
@@ -133,14 +134,12 @@ public class SliceFixture : IAsyncLifetime
         });
     }
 
-    public Task<T> GetLast<T>()
+    public Task<T?> GetLast<T>()
         where T : class, IEntity
     {
-        return ExecuteDbContextAsync<T>(db =>
-        {
-            var res = db.Set<T>().OrderByDescending(x => x.Id).FirstOrDefault();
-            return Task.FromResult(res);
-        });
+        return ExecuteDbContextAsync<T?>(db =>
+            db.Set<T>().OrderByDescending(x => x.Id).FirstOrDefaultAsync()
+        );
     }
 
     public Task<int> InsertAsync<T>(T entity)
@@ -155,12 +154,14 @@ public class SliceFixture : IAsyncLifetime
     }
 
 
-    public async Task InitializeAsync()
+    public Task InitializeAsync()
     {
         using var scope = _scopeFactory.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ChingContext>();
 
         dbContext.Database.EnsureCreated();
+
+        return Task.CompletedTask;
     }
 
     public Task DisposeAsync()

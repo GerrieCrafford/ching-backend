@@ -1,3 +1,4 @@
+#pragma warning disable 8618
 namespace Ching.Entities;
 
 public class Transfer : BaseEntity
