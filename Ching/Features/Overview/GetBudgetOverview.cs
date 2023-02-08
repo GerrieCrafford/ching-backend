@@ -3,26 +3,27 @@ namespace Ching.Features.Overview;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Ching.Data;
+using FluentValidation;
 
 public class GetBudgetOverview
 {
-    public record Query : IRequest<Result>
+    public record Query(int Year, int Month) : IRequest<Result>;
+
+    public class QueryValidator : AbstractValidator<Query>
     {
-        public int Year { get; init; }
-        public int Month { get; init; }
+        public QueryValidator()
+        {
+            RuleFor(query => query.Month).InclusiveBetween(1, 12);
+        }
     }
 
     public record Result
     {
         public List<BudgetOverviewItem> OverviewItems { get; init; }
 
-        public record BudgetOverviewItem
-        {
-            public int CategoryId { get; init; }
-            public string CategoryName { get; init; }
-            public decimal Spent { get; init; }
-            public decimal Available { get; init; }
-        }
+        public Result(List<BudgetOverviewItem> items) => OverviewItems = items;
+
+        public record BudgetOverviewItem(int CategoryId, string CategoryName, decimal Spent, decimal Available);
     }
 
     public class Handler : IRequestHandler<Query, Result>
@@ -48,18 +49,15 @@ public class GetBudgetOverview
                 var transactionsSpent = transactions.Sum(x => x.Amount);
 
                 overviewItems.Add(new Result.BudgetOverviewItem
-                {
-                    Spent = transfersSpent + transactionsSpent,
-                    Available = available,
-                    CategoryId = monthBudget.BudgetCategory.Id,
-                    CategoryName = monthBudget.BudgetCategory.Name,
-                });
+                (
+                    monthBudget.BudgetCategory.Id,
+                    monthBudget.BudgetCategory.Name,
+                    transfersSpent + transactionsSpent,
+                    available
+                ));
             }
 
-            return new Result
-            {
-                OverviewItems = overviewItems
-            };
+            return new Result(overviewItems);
         }
     }
 }

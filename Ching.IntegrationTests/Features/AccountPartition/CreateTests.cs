@@ -13,8 +13,9 @@ public class CreateTests : BaseTest
     public async Task Should_create_new_account_partition()
     {
         var account = await _fixture.FindAsync<Entities.Account>(a => a.Name == "ACC1");
+        account.ShouldNotBeNull();
 
-        var command = new Create.Command { Name = "Partition name", AccountId = account.Id };
+        var command = new Create.Command(account.Id, "Partition name");
         var partitionId = await _fixture.SendAsync(command);
 
         var created = await _fixture.ExecuteDbContextAsync(db => db.AccountPartitions.Where(part => part.Name == command.Name).SingleOrDefaultAsync());

@@ -1,23 +1,23 @@
-namespace Ching.Features.Account;
-
 using Microsoft.EntityFrameworkCore;
 using MediatR;
+using AutoMapper;
+
 using Ching.Data;
+using Ching.DTOs;
+
+namespace Ching.Features.Account;
 
 public class List
 {
-    public record Query : IRequest<Result>
-    { }
+    public record Query() : IRequest<Result>;
 
     public record Result
     {
         public List<Account> Accounts { get; init; }
 
-        public record Account
-        {
-            public int Id { get; init; }
-            public string Name { get; init; }
-        }
+        public Result(List<Account> accounts) => Accounts = accounts;
+
+        public record Account(int Id, string Name);
     }
 
     public class Handler : IRequestHandler<Query, Result>
@@ -28,12 +28,20 @@ public class List
         public async Task<Result> Handle(Query request, CancellationToken cancellationToken)
         {
             var accounts = await _db.Accounts.Select(x => new Result.Account
-            {
-                Id = x.Id,
-                Name = x.Name
-            }).ToListAsync();
+            (
+                x.Id,
+                x.Name
+            )).ToListAsync();
 
-            return new Result { Accounts = accounts };
+            return new Result(accounts);
+        }
+    }
+
+    public class MappingProfile : Profile
+    {
+        public MappingProfile()
+        {
+            CreateMap<Result.Account, AccountDTO>();
         }
     }
 }

@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Ching.DTOs;
+using FluentValidation;
 
 namespace Ching.Features.Settlement;
 
@@ -13,18 +14,20 @@ public static class SettlementEndpoints
             .WithName("CreateSettlement");
     }
 
-    public static async Task<IResult> Create(CreateSettlementRequest request, IMediator mediator, IMapper mapper)
+    public static async Task<IResult> Create(Create.Command request, IMediator mediator, IMapper mapper)
     {
-        await mediator.Send(mapper.Map<Create.Command>(request));
-
-        return Results.Ok();
-    }
-
-    public class MappingProfile : Profile
-    {
-        public MappingProfile()
+        try
         {
-            CreateMap<CreateSettlementRequest, Create.Command>();
+            await mediator.Send(request);
+            return Results.Ok();
+        }
+        catch (ValidationException exception)
+        {
+            return Results.BadRequest(new { Errors = exception.Errors });
+        }
+        catch (DomainException exception)
+        {
+            return Results.BadRequest(exception.ToResult());
         }
     }
 }

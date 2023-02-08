@@ -1,6 +1,7 @@
 using MediatR;
 using Ching.DTOs;
 using AutoMapper;
+using FluentValidation;
 
 namespace Ching.Features.AccountPartition;
 
@@ -23,30 +24,53 @@ public static class AccountPartitionsEndpoints
 
     public static async Task<IResult> GetAccountPartitions(int accountId, IMediator mediator, IMapper mapper)
     {
-        var data = await mediator.Send(new List.Query { AccountId = accountId });
+        try
+        {
+            var data = await mediator.Send(new List.Query { AccountId = accountId });
 
-        if (data == null)
-            return Results.Problem();
+            if (data == null)
+                return Results.Problem();
 
-        var accountPartitionDTOs = mapper.Map<List<AccountPartitionDTO>>(data.AccountPartitions);
-        return Results.Ok(accountPartitionDTOs);
+            var accountPartitionDTOs = mapper.Map<List<AccountPartitionDTO>>(data.AccountPartitions);
+            return Results.Ok(accountPartitionDTOs);
+        }
+        catch (ValidationException exception)
+        {
+            return Results.BadRequest(new { Errors = exception.Errors });
+        }
     }
 
-    public static async Task<IResult> CreateAccountPartition(CreateAccountPartitionRequest request, IMediator mediator, IMapper mapper)
+    public static async Task<IResult> CreateAccountPartition(Create.Command request, IMediator mediator, IMapper mapper)
     {
-        var id = await mediator.Send(mapper.Map<Create.Command>(request));
-        return Results.Ok(id);
+        try
+        {
+            var id = await mediator.Send(request);
+            return Results.Ok(id);
+        }
+        catch (ValidationException exception)
+        {
+            return Results.BadRequest(new { Errors = exception.Errors });
+        }
+        catch (DomainException exception)
+        {
+            return Results.BadRequest(exception.ToResult());
+        }
     }
 
     public static async Task<IResult> ArchivePartition(int accountPartitionId, IMediator mediator)
     {
-        await mediator.Send(new Archive.Command { AccountPartitionId = accountPartitionId });
-
-        return Results.Ok();
-    }
-
-    public class MappingProfile : Profile
-    {
-        public MappingProfile() => CreateMap<CreateAccountPartitionRequest, Create.Command>();
+        try
+        {
+            await mediator.Send(new Archive.Command(accountPartitionId));
+            return Results.Ok();
+        }
+        catch (ValidationException exception)
+        {
+            return Results.BadRequest(new { Errors = exception.Errors });
+        }
+        catch (DomainException exception)
+        {
+            return Results.BadRequest(exception.ToResult());
+        }
     }
 }

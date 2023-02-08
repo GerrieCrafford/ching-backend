@@ -6,13 +6,18 @@ using MediatR;
 using Ching.Data;
 using Ching.Entities;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation;
 
 public class Duplicate
 {
-    public class Command : IRequest
+    public record Command(int Year, int Month) : IRequest;
+
+    public class CommandValidator : AbstractValidator<Command>
     {
-        public int Year { get; init; }
-        public int Month { get; init; }
+        public CommandValidator()
+        {
+            RuleFor(command => command.Month).InclusiveBetween(1, 12);
+        }
     }
 
     public class Handler : IRequestHandler<Command, Unit>

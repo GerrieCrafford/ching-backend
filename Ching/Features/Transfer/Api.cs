@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Ching.DTOs;
+using FluentValidation;
 
 namespace Ching.Features.Transfer;
 
@@ -17,27 +18,37 @@ public static class TransferEndpoints
             .WithName("CreateSavingsPayment");
     }
 
-    public static async Task<IResult> Create(CreateTransferRequest request, IMediator mediator, IMapper mapper)
+    public static async Task<IResult> Create(CreateTransfer.Command request, IMediator mediator, IMapper mapper)
     {
-        var id = await mediator.Send(mapper.Map<CreateTransfer.Command>(request));
-        return Results.Ok(id);
-    }
-
-    public static async Task<IResult> CreateSavingsPayment(CreateSavingsPaymentRequest request, IMediator mediator, IMapper mapper)
-    {
-        var id = await mediator.Send(mapper.Map<CreateSavingsPayment.Command>(request));
-        return Results.Ok(id);
-    }
-
-    public class MappingProfile : Profile
-    {
-        public MappingProfile()
+        try
         {
-            CreateMap<CreateTransferRequest, CreateTransfer.Command>();
+            var id = await mediator.Send(request);
+            return Results.Ok(id);
+        }
+        catch (ValidationException exception)
+        {
+            return Results.BadRequest(new { Errors = exception.Errors });
+        }
+        catch (DomainException exception)
+        {
+            return Results.BadRequest(exception.ToResult());
+        }
+    }
 
-            CreateMap<CreateBudgetAssignmentRequest, CreateSavingsPayment.Command.BudgetAssignmentData>();
-            CreateMap<CreateMonthBudgetRequest, CreateSavingsPayment.Command.BudgetMonthData>();
-            CreateMap<CreateSavingsPaymentRequest, CreateSavingsPayment.Command>();
+    public static async Task<IResult> CreateSavingsPayment(CreateSavingsPayment.Command request, IMediator mediator, IMapper mapper)
+    {
+        try
+        {
+            var id = await mediator.Send(request);
+            return Results.Ok(id);
+        }
+        catch (ValidationException exception)
+        {
+            return Results.BadRequest(new { Errors = exception.Errors });
+        }
+        catch (DomainException exception)
+        {
+            return Results.BadRequest(exception.ToResult());
         }
     }
 }

@@ -12,7 +12,7 @@ public class CreateTests : BaseTest
     [Fact]
     public async Task Should_create_new_account_with_remaining_partition()
     {
-        var command = new Create.Command { Name = "Account name " };
+        var command = new Create.Command("Account name ");
 
         var accountId = await _fixture.SendAsync(command);
 

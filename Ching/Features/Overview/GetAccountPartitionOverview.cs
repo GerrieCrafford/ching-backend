@@ -3,24 +3,27 @@ namespace Ching.Features.Overview;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Ching.Data;
+using FluentValidation;
 
 public class GetAccountPartitionOverview
 {
-    public record Query : IRequest<Result>
+    public record Query(int AccountId) : IRequest<Result>;
+
+    public class QueryValidator : AbstractValidator<Query>
     {
-        public int AccountId { get; init; }
+        public QueryValidator()
+        {
+            RuleFor(query => query.AccountId).GreaterThanOrEqualTo(0);
+        }
     }
 
     public record Result
     {
         public List<PartitionDataItem> PartitionData { get; init; }
 
-        public record PartitionDataItem
-        {
-            public int PartitionId { get; init; }
-            public string PartitionName { get; init; }
-            public decimal Balance { get; init; }
-        }
+        public Result(List<PartitionDataItem> dataItems) => PartitionData = dataItems;
+
+        public record PartitionDataItem(int PartitionId, string PartitionName, decimal Balance);
     }
 
     public class Handler : IRequestHandler<Query, Result>
@@ -34,13 +37,13 @@ public class GetAccountPartitionOverview
                             group at by at.AccountPartition
                             into g
                             select new Result.PartitionDataItem
-                            {
-                                PartitionId = g.Key.Id,
-                                PartitionName = g.Key.Name,
-                                Balance = (decimal)g.ToList().Sum(at => (float)at.Amount)
-                            };
+                            (
+                                g.Key.Id,
+                                g.Key.Name,
+                                (decimal)g.ToList().Sum(at => (float)at.Amount)
+                            );
 
-            return new Result { PartitionData = await dataItems.ToListAsync() };
+            return new Result(await dataItems.ToListAsync());
         }
     }
 }

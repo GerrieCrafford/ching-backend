@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 using MediatR;
 using Ching.Data;
 using Ching.Entities;
+using FluentValidation;
 
 public class Create
 {
-    public record Command : IRequest<int>
+    public record Command(int AccountPartitionId, DateOnly Date, decimal Amount, string Recipient, string? Note = null) : IRequest<int>;
+
+    public class CommandValidator : AbstractValidator<Command>
     {
-        public int AccountPartitionId { get; set; }
-        public DateOnly Date { get; set; }
-        public decimal Amount { get; set; }
-        public string Recipient { get; set; }
-        public string? Note { get; set; }
+        public CommandValidator()
+        {
+            RuleFor(command => command.AccountPartitionId).GreaterThanOrEqualTo(0);
+            RuleFor(command => command.Recipient).NotEmpty();
+        }
     }
 
     public class Handler : IRequestHandler<Command, int>
@@ -26,6 +29,8 @@ public class Create
         public async Task<int> Handle(Command request, CancellationToken cancellationToken)
         {
             var accountPartition = await _db.AccountPartitions.FindAsync(request.AccountPartitionId);
+            if (accountPartition == null)
+                throw new DomainException("Account partition does not exist.");
 
             var accountTransaction = new AccountTransaction(request.Date, request.Amount, accountPartition.Account, accountPartition, request.Recipient, request.Note);
 

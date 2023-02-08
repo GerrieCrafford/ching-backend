@@ -3,30 +3,28 @@ namespace Ching.Features.Overview;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Ching.Data;
+using FluentValidation;
 
 public class GetAccountTransactions
 {
-    public record Query : IRequest<Result>
+    public record Query(int AccountId) : IRequest<Result>;
+
+    public class QueryValidator : AbstractValidator<Query>
     {
-        public int AccountId { get; init; }
+        public QueryValidator()
+        {
+            RuleFor(query => query.AccountId).GreaterThanOrEqualTo(0);
+        }
     }
 
     public record Result
     {
         public List<TransactionWithBalance> TransactionData { get; init; }
 
-        public record TransactionWithBalance
-        {
-            public Transaction Transaction { get; init; }
-            public decimal Balance { get; init; }
-        }
+        public Result(List<TransactionWithBalance> items) => TransactionData = items;
 
-        public record Transaction
-        {
-            public DateOnly Date { get; init; }
-            public decimal Amount { get; init; }
-            public string? Note { get; init; }
-        }
+        public record TransactionWithBalance(Transaction Transaction, decimal Balance);
+        public record Transaction(DateOnly Date, decimal Amount, string? Note = null);
     }
 
     public class Handler : IRequestHandler<Query, Result>
@@ -46,19 +44,19 @@ public class GetAccountTransactions
             {
                 balance += transaction.Amount;
                 var transactionWithBalance = new Result.TransactionWithBalance
-                {
-                    Balance = balance,
-                    Transaction = new Result.Transaction
-                    {
-                        Amount = transaction.Amount,
-                        Date = transaction.Date,
-                        Note = transaction.Note
-                    }
-                };
+                (
+                    new Result.Transaction
+                    (
+                        transaction.Date,
+                        transaction.Amount,
+                        transaction.Note
+                    ),
+                    balance
+                );
                 data.Add(transactionWithBalance);
             }
 
-            return new Result { TransactionData = data };
+            return new Result(data);
         }
     }
 }

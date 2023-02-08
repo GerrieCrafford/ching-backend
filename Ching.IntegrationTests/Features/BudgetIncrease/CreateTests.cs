@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Ching.Features.BudgetIncrease;
+using Ching.DTOs;
 
 namespace Ching.IntegrationTests.Features.BudgetIncrease;
 
@@ -18,22 +19,21 @@ public class CreateTests : BaseTest
         var cat1 = await _fixture.FindAsync<Entities.BudgetCategory>(x => x.Name == "Seed category 1");
         var cat2 = await _fixture.FindAsync<Entities.BudgetCategory>(x => x.Name == "Seed category 2");
 
+        partition1.ShouldNotBeNull();
+        partition2.ShouldNotBeNull();
+        cat1.ShouldNotBeNull();
+
         var command = new Create.Command
-        {
-            BudgetCategoryId = cat1.Id,
-            BudgetMonth = new Create.Command.BudgetMonthData
-            {
-                Month = 2,
-                Year = 2023
-            },
-            Transfer = new Create.Command.TransferData
-            {
-                Amount = 130m,
-                Date = new DateOnly(2023, 2, 14),
-                SourcePartitionId = partition1.Id,
-                DestinationPartitionId = partition2.Id,
-            }
-        };
+        (
+            cat1.Id,
+            new BudgetMonthDTO(2023, 2),
+            new Create.Command.TransferData(
+                new DateOnly(2023, 2, 14),
+                130m,
+                partition1.Id,
+                partition2.Id
+            )
+        );
         await _fixture.SendAsync(command);
 
         var transfer = await _fixture.GetLast<Entities.Transfer>();

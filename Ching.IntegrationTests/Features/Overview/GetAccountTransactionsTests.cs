@@ -17,6 +17,9 @@ public class GetAccountTransactionsTests : BaseTest
         var account1 = await _fixture.ExecuteDbContextAsync(db => db.Accounts.Where(x => x.Name == "ACC1").SingleOrDefaultAsync());
         var account2 = await _fixture.ExecuteDbContextAsync(db => db.Accounts.Where(x => x.Name == "ACC2").SingleOrDefaultAsync());
 
+        account1.ShouldNotBeNull();
+        account2.ShouldNotBeNull();
+
         var part1Id = account1.RemainingPartition.Id;
         var part2Id = account2.RemainingPartition.Id;
 
@@ -37,19 +40,19 @@ public class GetAccountTransactionsTests : BaseTest
         foreach (var (accountPartitionId, amount, date) in seedData)
         {
             await _fixture.SendAsync(new AccountTransactionCreate.Command
-            {
-                Date = date,
-                AccountPartitionId = accountPartitionId,
-                Amount = amount,
-                Recipient = "Recipient"
-            });
+            (
+                accountPartitionId,
+                date,
+                amount,
+                "Recipient"
+            ));
         }
     }
 
     [Fact]
     public async Task Should_return_account_transactions()
     {
-        var command = new GetAccountTransactions.Query { AccountId = 1 };
+        var command = new GetAccountTransactions.Query(1);
 
         var transactions = await _fixture.SendAsync(command);
 
@@ -77,7 +80,7 @@ public class GetAccountTransactionsTests : BaseTest
         transactions.TransactionData[4].Transaction.Date.ShouldBeEquivalentTo(new DateOnly(2023, 1, 29));
         transactions.TransactionData[5].Transaction.Date.ShouldBeEquivalentTo(new DateOnly(2023, 2, 1));
 
-        command = new GetAccountTransactions.Query { AccountId = 2 };
+        command = new GetAccountTransactions.Query(2);
 
         transactions = await _fixture.SendAsync(command);
 

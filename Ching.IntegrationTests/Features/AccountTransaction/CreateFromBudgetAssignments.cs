@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Ching.Features.AccountTransaction;
+using Ching.DTOs;
 
 namespace Ching.IntegrationTests.Features.AccountTransaction;
 
@@ -17,16 +18,20 @@ public class CreateFromBudgetAssignmentsTests : BaseTest
         var cat1 = await _fixture.FindAsync<Entities.BudgetCategory>(x => x.Name == "Seed category 1");
         var cat2 = await _fixture.FindAsync<Entities.BudgetCategory>(x => x.Name == "Seed category 2");
 
+        partition.ShouldNotBeNull();
+        cat1.ShouldNotBeNull();
+        cat2.ShouldNotBeNull();
+
         var command = new CreateFromBudgetAssignments.Command
-        {
-            AccountPartitionId = partition.Id,
-            Date = new DateOnly(2023, 1, 5),
-            Recipient = "Test recipient",
-            BudgetAssignments = new List<CreateFromBudgetAssignments.Command.BudgetAssignment> {
-                new CreateFromBudgetAssignments.Command.BudgetAssignment { Amount = 105.5m, BudgetCategoryId = cat1.Id, BudgetMonth = new Entities.BudgetMonth(2023, 1), Note = "Test note" },
-                new CreateFromBudgetAssignments.Command.BudgetAssignment { Amount = 100m, BudgetCategoryId = cat2.Id, BudgetMonth = new Entities.BudgetMonth(2023, 1) }
-            },
-        };
+        (
+            partition.Id,
+            new DateOnly(2023, 1, 5),
+            "Test recipient",
+            new List<CreateFromBudgetAssignments.Command.BudgetAssignment> {
+                new CreateFromBudgetAssignments.Command.BudgetAssignment ( cat1.Id,   new BudgetMonthDTO(2023, 1), 105.5m,  "Test note" ),
+                new CreateFromBudgetAssignments.Command.BudgetAssignment ( cat2.Id,   new BudgetMonthDTO(2023, 1), 100m),
+            }
+        );
         var transactionId = await _fixture.SendAsync(command);
 
         var created = await _fixture.ExecuteDbContextAsync(db => db.AccountTransactions.Where(trans => trans.Id == transactionId).Include(trans => trans.BudgetAssignments).SingleOrDefaultAsync());

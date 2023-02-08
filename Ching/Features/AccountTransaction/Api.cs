@@ -1,6 +1,7 @@
 using MediatR;
 using Ching.DTOs;
 using AutoMapper;
+using FluentValidation;
 
 namespace Ching.Features.AccountTransaction;
 
@@ -21,16 +22,38 @@ public static class AccountTransactionsEndpoints
             .WithName("EditAccountTransaction");
     }
 
-    public static async Task<IResult> Create(CreateAccountTransactionRequest request, IMediator mediator, IMapper mapper)
+    public static async Task<IResult> Create(Create.Command request, IMediator mediator, IMapper mapper)
     {
-        var id = await mediator.Send(mapper.Map<Create.Command>(request));
-        return Results.Ok(id);
+        try
+        {
+            var id = await mediator.Send(request);
+            return Results.Ok(id);
+        }
+        catch (ValidationException exception)
+        {
+            return Results.BadRequest(new { Errors = exception.Errors });
+        }
+        catch (DomainException exception)
+        {
+            return Results.BadRequest(exception.ToResult());
+        }
     }
 
-    public static async Task<IResult> CreateFromAssignments(CreateAccountTransactionFromAssignmentsRequest request, IMediator mediator, IMapper mapper)
+    public static async Task<IResult> CreateFromAssignments(CreateFromBudgetAssignments.Command request, IMediator mediator, IMapper mapper)
     {
-        var id = await mediator.Send(mapper.Map<CreateFromBudgetAssignments.Command>(request));
-        return Results.Ok(id);
+        try
+        {
+            var id = await mediator.Send(request);
+            return Results.Ok(id);
+        }
+        catch (ValidationException exception)
+        {
+            return Results.BadRequest(new { Errors = exception.Errors });
+        }
+        catch (DomainException exception)
+        {
+            return Results.BadRequest(exception.ToResult());
+        }
     }
 
     public static async Task<IResult> Edit(int accountTransactionId, EditAccountTransactionRequest request, IMediator mediator, IMapper mapper)
@@ -47,11 +70,7 @@ public static class AccountTransactionsEndpoints
     {
         public MappingProfile()
         {
-            CreateMap<CreateBudgetAssignmentRequest, CreateFromBudgetAssignments.Command.BudgetAssignment>();
-            CreateMap<CreateAccountTransactionFromAssignmentsRequest, CreateFromBudgetAssignments.Command>();
-
-            CreateMap<CreateAccountTransactionRequest, Create.Command>();
-
+            CreateMap<CreateBudgetAssignmentRequest, Edit.Command.BudgetAssignment>();
             CreateMap<EditAccountTransactionRequest, Edit.Command>();
         }
     }

@@ -18,6 +18,10 @@ public class CreateTests : BaseTest
             var acc1part2 = await db.AccountPartitions.Where(x => x.Name == "ACC1P2").FirstOrDefaultAsync();
             var acc2part1 = await db.AccountPartitions.Where(x => x.Name == "ACC2P1").FirstOrDefaultAsync();
 
+            acc1part1.ShouldNotBeNull();
+            acc1part2.ShouldNotBeNull();
+            acc2part1.ShouldNotBeNull();
+
             var partSource = await db.AccountPartitions.Where(x => x.Name == "ACC3P1").FirstOrDefaultAsync();
 
             var transaction1 = new Entities.AccountTransaction(new DateOnly(2023, 1, 1), 101.1m, acc1part1.Account, acc1part1, "Recipient 1");
@@ -31,12 +35,7 @@ public class CreateTests : BaseTest
             return (acc1part1, acc1part2, acc2part1, partSource, new List<int> { transaction1.Id, transaction2.Id, transaction3.Id });
         });
 
-        var command = new Create.Command
-        {
-            AccountTransactionIds = accountTransactionIds,
-            Date = new DateOnly(2023, 1, 15),
-            SourcePartitionId = partSource.Id,
-        };
+        var command = new Create.Command(new DateOnly(2023, 1, 15), accountTransactionIds, partSource.Id);
 
         await _fixture.SendAsync(command);
 

@@ -23,7 +23,7 @@ public static class OverviewEndpoints
 
     public static async Task<IResult> AccountPartitionOverview(int accountPartitionId, IMediator mediator, IMapper mapper)
     {
-        var overview = await mediator.Send(new GetAccountPartitionOverview.Query { AccountId = accountPartitionId });
+        var overview = await mediator.Send(new GetAccountPartitionOverview.Query(accountPartitionId));
 
         if (overview == null || overview.PartitionData == null) return Results.NotFound();
 
@@ -32,7 +32,7 @@ public static class OverviewEndpoints
 
     public static async Task<IResult> AccountTransactionOverview(int accountId, IMediator mediator, IMapper mapper)
     {
-        var overview = await mediator.Send(new GetAccountTransactions.Query { AccountId = accountId });
+        var overview = await mediator.Send(new GetAccountTransactions.Query(accountId));
 
         if (overview == null || overview.TransactionData == null) return Results.NotFound();
 
@@ -41,7 +41,7 @@ public static class OverviewEndpoints
 
     public static async Task<IResult> BudgetOverview(int year, int month, IMediator mediator, IMapper mapper)
     {
-        var overview = await mediator.Send(new GetBudgetOverview.Query { Year = year, Month = month });
+        var overview = await mediator.Send(new GetBudgetOverview.Query(year, month));
 
         if (overview == null || overview.OverviewItems == null) return Results.NotFound();
 

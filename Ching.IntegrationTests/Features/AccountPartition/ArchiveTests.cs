@@ -13,8 +13,9 @@ public class ArchiveTests : BaseTest
     public async Task Should_archive_partition()
     {
         var account = await _fixture.FindAsync<Entities.Account>(a => a.Name == "ACC1");
+        account.ShouldNotBeNull();
 
-        var command = new Create.Command { Name = "Partition 2 name", AccountId = account.Id };
+        var command = new Create.Command(account.Id, "Partition 2 name");
         var partitionId = await _fixture.SendAsync(command);
 
         var created = await _fixture.ExecuteDbContextAsync(db => db.AccountPartitions.Where(part => part.Name == command.Name).SingleOrDefaultAsync());
@@ -22,7 +23,7 @@ public class ArchiveTests : BaseTest
         created.ShouldNotBeNull();
         created.Archived.ShouldBe(false);
 
-        var archiveCommand = new Archive.Command { AccountPartitionId = partitionId };
+        var archiveCommand = new Archive.Command(partitionId);
         await _fixture.SendAsync(archiveCommand);
 
         var archivedPartition = await _fixture.ExecuteDbContextAsync(db => db.AccountPartitions.Where(part => part.Id == created.Id).SingleOrDefaultAsync());

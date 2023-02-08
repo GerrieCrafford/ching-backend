@@ -15,11 +15,7 @@ public class DuplicateTests : BaseTest
     {
         var mbs = await _fixture.ExecuteDbContextAsync(db => db.MonthBudgets.Where(x => x.BudgetMonth.Year == 2023 && x.BudgetMonth.Month == 1).ToListAsync());
 
-        var command = new Duplicate.Command
-        {
-            Month = 1,
-            Year = 2023
-        };
+        var command = new Duplicate.Command(2023, 1);
         await _fixture.SendAsync(command);
 
         var duplicated = await _fixture.ExecuteDbContextAsync(db =>

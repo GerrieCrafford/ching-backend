@@ -1,5 +1,6 @@
 using AutoMapper;
 using Ching.DTOs;
+using FluentValidation;
 using MediatR;
 
 namespace Ching.Features.BudgetCategory;
@@ -16,21 +17,25 @@ public static class BudgetCategoriesEndpoints
 
     public static async Task<IResult> CreateHandler(Create.Command request, IMediator mediator, IMapper mapper, Create.CommandValidator validator)
     {
-        var result = await validator.ValidateAsync(request);
-        if (!result.IsValid)
+        try
         {
-            return Results.BadRequest(new { Errors = result.Errors });
+
+            var result = await validator.ValidateAsync(request);
+            if (!result.IsValid)
+            {
+                return Results.BadRequest(new { Errors = result.Errors });
+            }
+
+            var id = await mediator.Send(mapper.Map<Create.Command>(request));
+            return Results.Ok(id);
         }
-
-        var id = await mediator.Send(mapper.Map<Create.Command>(request));
-        return Results.Ok(id);
-    }
-
-    public class MappingProfile : Profile
-    {
-        public MappingProfile()
+        catch (ValidationException exception)
         {
-            CreateMap<CreateBudgetCategoryRequest, Create.Command>();
+            return Results.BadRequest(new { Errors = exception.Errors });
+        }
+        catch (DomainException exception)
+        {
+            return Results.BadRequest(exception.ToResult());
         }
     }
 }

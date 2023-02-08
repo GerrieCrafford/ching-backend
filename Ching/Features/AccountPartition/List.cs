@@ -5,6 +5,7 @@ using MediatR;
 using Ching.Data;
 using AutoMapper;
 using Ching.DTOs;
+using FluentValidation;
 
 public class List
 {
@@ -13,17 +14,21 @@ public class List
         public int AccountId { get; init; }
     }
 
+    public class QueryValidator : AbstractValidator<Query>
+    {
+        public QueryValidator()
+        {
+            RuleFor(query => query.AccountId).GreaterThanOrEqualTo(0);
+        }
+    }
+
     public record Result
     {
         public List<AccountPartition> AccountPartitions { get; init; }
 
-        public record AccountPartition
-        {
-            public int Id { get; init; }
-            public string Name { get; init; }
-            public bool Archived { get; init; }
-            public BudgetMonthDTO? BudgetMonth { get; init; }
-        }
+        public Result(List<AccountPartition> accountPartitions) => AccountPartitions = accountPartitions;
+
+        public record AccountPartition(int Id, string Name, bool Archived, BudgetMonthDTO? BudgetMonth);
     }
 
     public class MappingProfile : Profile
@@ -39,16 +44,14 @@ public class List
         public async Task<Result> Handle(Query request, CancellationToken cancellationToken)
         {
             var partitions = await _db.AccountPartitions.Where(x => x.AccountId == request.AccountId).ToListAsync();
-            return new Result
-            {
-                AccountPartitions = partitions.Select(x => new Result.AccountPartition
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Archived = x.Archived,
-                    BudgetMonth = x.BudgetMonth != null ? new BudgetMonthDTO(x.BudgetMonth.Year, x.BudgetMonth.Month) : null
-                }).ToList()
-            };
+            return new Result(partitions.Select(x => new Result.AccountPartition
+                (
+                    x.Id,
+                    x.Name,
+                    x.Archived,
+                    x.BudgetMonth != null ? new BudgetMonthDTO(x.BudgetMonth.Year, x.BudgetMonth.Month) : null
+                )).ToList()
+            );
         }
     }
 }

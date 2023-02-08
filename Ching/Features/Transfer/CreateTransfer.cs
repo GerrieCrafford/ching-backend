@@ -6,17 +6,21 @@ using MediatR;
 using Ching.Data;
 using Ching.Entities;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation;
 
 public class CreateTransfer
 {
-    public record Command : IRequest<int>
-    {
-        public DateOnly Date { get; set; }
-        public decimal Amount { get; set; }
-        public int SourcePartitionId { get; set; }
-        public int DestinationPartitionId { get; set; }
-    }
+    public record Command(DateOnly Date, decimal Amount, int SourcePartitionId, int DestinationPartitionId) : IRequest<int>;
 
+    public class CommandValidator : AbstractValidator<Command>
+    {
+        public CommandValidator()
+        {
+            RuleFor(command => command.Amount).GreaterThan(0);
+            RuleFor(command => command.SourcePartitionId).GreaterThanOrEqualTo(0);
+            RuleFor(command => command.DestinationPartitionId).GreaterThanOrEqualTo(0);
+        }
+    }
     public class Handler : IRequestHandler<Command, int>
     {
         private readonly ChingContext _db;

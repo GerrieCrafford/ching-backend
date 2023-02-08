@@ -17,6 +17,9 @@ public class GetAccountPartitionOverviewTests : BaseTest
         var account1 = await _fixture.ExecuteDbContextAsync(db => db.Accounts.Where(x => x.Name == "ACC1").SingleOrDefaultAsync());
         var account2 = await _fixture.ExecuteDbContextAsync(db => db.Accounts.Where(x => x.Name == "ACC2").SingleOrDefaultAsync());
 
+        account1.ShouldNotBeNull();
+        account2.ShouldNotBeNull();
+
         var part1Remaining = account1.RemainingPartition.Id;
         var part1_1 = account1.Partitions[1].Id;
         var part1_2 = account1.Partitions[2].Id;
@@ -37,19 +40,19 @@ public class GetAccountPartitionOverviewTests : BaseTest
         foreach (var (accountPartitionId, amount) in seedData)
         {
             await _fixture.SendAsync(new AccountTransactionCreate.Command
-            {
-                Date = new DateOnly(),
-                AccountPartitionId = accountPartitionId,
-                Amount = amount,
-                Recipient = "Recipient"
-            });
+            (
+                accountPartitionId,
+                new DateOnly(),
+                amount,
+                "Recipient"
+            ));
         }
     }
 
     [Fact]
     public async Task Should_return_account_partition_overview()
     {
-        var command = new GetAccountPartitionOverview.Query { AccountId = 1 };
+        var command = new GetAccountPartitionOverview.Query(1);
 
         var overview = await _fixture.SendAsync(command);
 

@@ -1,4 +1,6 @@
 using MediatR;
+using FluentValidation;
+
 using Ching.Data;
 
 using Ching.Features.Account;
@@ -10,17 +12,21 @@ using Ching.Features.MonthBudget;
 using Ching.Features.Overview;
 using Ching.Features.Settlement;
 using Ching.Features.Transfer;
-using FluentValidation;
+using Ching.PipelineBehaviors;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.CustomSchemaIds(type => type.ToString());
+});
 builder.Services.AddMediatR(typeof(Program));
 builder.Services.AddSqlite<ChingContext>("Data Source=Ching.db");
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 var app = builder.Build();
 

@@ -17,14 +17,16 @@ public class CreateTests : BaseTest
         var cat1 = await _fixture.FindAsync<Entities.BudgetCategory>(x => x.Name == "Seed category 1");
         var cat2 = await _fixture.FindAsync<Entities.BudgetCategory>(x => x.Name == "Seed category 2");
 
+        partition.ShouldNotBeNull();
+
         var command = new Create.Command
-        {
-            AccountPartitionId = partition.Id,
-            Date = new DateOnly(2023, 1, 5),
-            Amount = 13.5m,
-            Recipient = "Recipient test",
-            Note = "Some note",
-        };
+        (
+            partition.Id,
+            new DateOnly(2023, 1, 5),
+            13.5m,
+            "Recipient test",
+            "Some note"
+        );
         var transactionId = await _fixture.SendAsync(command);
 
         var created = await _fixture.ExecuteDbContextAsync(db => db.AccountTransactions.Where(trans => trans.Id == transactionId).SingleOrDefaultAsync());

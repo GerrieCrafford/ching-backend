@@ -1,3 +1,4 @@
+using Ching.DTOs;
 using Ching.Features.Transfer;
 
 namespace Ching.IntegrationTests.Features.Transfer;
@@ -15,13 +16,10 @@ public class CreateTests : BaseTest
         var part1 = await _fixture.FindAsync<Entities.AccountPartition>(x => x.Name == "ACC1P1");
         var part2 = await _fixture.FindAsync<Entities.AccountPartition>(x => x.Name == "ACC1P2");
 
-        var command = new CreateTransfer.Command
-        {
-            Amount = 121.64m,
-            SourcePartitionId = part2.Id,
-            DestinationPartitionId = part1.Id,
-            Date = new DateOnly(2023, 1, 20),
-        };
+        part1.ShouldNotBeNull();
+        part2.ShouldNotBeNull();
+
+        var command = new CreateTransfer.Command(new DateOnly(2023, 1, 20), 121.64m, part2.Id, part1.Id);
         var transferId = await _fixture.SendAsync(command);
 
         var transfer = await _fixture.GetLast<Entities.Transfer>();
@@ -41,23 +39,23 @@ public class CreateTests : BaseTest
         var part1 = await _fixture.FindAsync<Entities.AccountPartition>(x => x.Name == "ACC1P1");
         var part2 = await _fixture.FindAsync<Entities.AccountPartition>(x => x.Name == "ACC1P2");
 
+        cat1.ShouldNotBeNull();
+        part1.ShouldNotBeNull();
+        part2.ShouldNotBeNull();
+
         var command = new CreateSavingsPayment.Command
-        {
-            Date = new DateOnly(2023, 4, 1),
-            Amount = 992.4m,
-            SourcePartitionId = part1.Id,
-            DestinationPartitionId = part2.Id,
-            BudgetAssignment = new CreateSavingsPayment.Command.BudgetAssignmentData
-            {
-                Amount = 992.4m,
-                BudgetCategoryId = cat1.Id,
-                BudgetMonth = new CreateSavingsPayment.Command.BudgetMonthData
-                {
-                    Year = 2023,
-                    Month = 3
-                }
-            }
-        };
+        (
+            new DateOnly(2023, 4, 1),
+            992.4m,
+            part1.Id,
+            part2.Id,
+            new CreateSavingsPayment.Command.BudgetAssignmentData
+            (
+                cat1.Id,
+                new BudgetMonthDTO(2023, 3),
+                992.4m
+            )
+        );
 
         var transferId = await _fixture.SendAsync(command);
 

@@ -6,14 +6,20 @@ using MediatR;
 using Ching.Data;
 using Ching.Entities;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation;
 
 public class Create
 {
-    public record Command : IRequest
+    public record Command(DateOnly Date, List<int> AccountTransactionIds, int SourcePartitionId) : IRequest;
+
+    public class CommandValidator : AbstractValidator<Command>
     {
-        public DateOnly Date { get; set; }
-        public List<int> AccountTransactionIds { get; set; }
-        public int SourcePartitionId { get; set; }
+        public CommandValidator()
+        {
+            RuleFor(command => command.SourcePartitionId).GreaterThanOrEqualTo(0);
+            RuleFor(command => command.AccountTransactionIds).NotEmpty();
+            RuleForEach(command => command.AccountTransactionIds).GreaterThanOrEqualTo(0);
+        }
     }
 
     public class Handler : IRequestHandler<Command>

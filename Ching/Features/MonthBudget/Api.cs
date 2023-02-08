@@ -1,5 +1,6 @@
 using AutoMapper;
 using Ching.DTOs;
+using FluentValidation;
 using MediatR;
 
 namespace Ching.Features.MonthBudget;
@@ -12,28 +13,42 @@ public static class MonthBudgetsEndpoints
             .Produces<int>()
             .WithName("CreateMonthBudget");
 
-        group.MapPost("/duplicate", Duplicate)
+        group.MapPost("/{year}/{month}/duplicate", Duplicate)
             .Produces(200)
             .WithName("DuplicateMonthBudget");
     }
 
-    public static async Task<IResult> Create(CreateMonthBudgetRequest request, IMediator mediator, IMapper mapper)
+    public static async Task<IResult> Create(Create.Command request, IMediator mediator, IMapper mapper)
     {
-        var id = await mediator.Send(mapper.Map<Create.Command>(request));
-        return Results.Ok(id);
+        try
+        {
+            var id = await mediator.Send(request);
+            return Results.Ok(id);
+        }
+        catch (ValidationException exception)
+        {
+            return Results.BadRequest(new { Errors = exception.Errors });
+        }
+        catch (DomainException exception)
+        {
+            return Results.BadRequest(exception.ToResult());
+        }
     }
 
     public static async Task<IResult> Duplicate(int year, int month, IMediator mediator, IMapper mapper)
     {
-        await mediator.Send(new Duplicate.Command { Year = year, Month = month });
-        return Results.Ok();
-    }
-
-    public class MappingProfile : Profile
-    {
-        public MappingProfile()
+        try
         {
-            CreateMap<CreateMonthBudgetRequest, Create.Command>();
+            await mediator.Send(new Duplicate.Command(year, month));
+            return Results.Ok();
+        }
+        catch (ValidationException exception)
+        {
+            return Results.BadRequest(new { Errors = exception.Errors });
+        }
+        catch (DomainException exception)
+        {
+            return Results.BadRequest(exception.ToResult());
         }
     }
 }

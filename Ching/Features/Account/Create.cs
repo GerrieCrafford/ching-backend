@@ -5,12 +5,18 @@ using System.Threading.Tasks;
 using MediatR;
 using Ching.Data;
 using Ching.Entities;
+using FluentValidation;
 
 public class Create
 {
-    public record Command : IRequest<int>
+    public record Command(string Name) : IRequest<int>;
+
+    public class CommandValidator : AbstractValidator<Command>
     {
-        public string Name { get; set; }
+        public CommandValidator()
+        {
+            RuleFor(command => command.Name).NotEmpty();
+        }
     }
 
     public class Handler : IRequestHandler<Command, int>

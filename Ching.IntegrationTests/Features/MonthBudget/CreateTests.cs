@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Ching.Features.MonthBudget;
+using Ching.DTOs;
 
 namespace Ching.IntegrationTests.Features.MonthBudget;
 
@@ -13,17 +14,14 @@ public class CreateTests : BaseTest
     public async Task Should_create_month_budget()
     {
         var cat1 = await _fixture.FindAsync<Entities.BudgetCategory>(x => x.Name == "Seed category 1");
+        cat1.ShouldNotBeNull();
 
         var command = new Create.Command
-        {
-            BudgetCategoryId = cat1.Id,
-            Amount = 13.43m,
-            BudgetMonth = new Create.Command.BudgetMonthData
-            {
-                Month = 5,
-                Year = 2023
-            }
-        };
+        (
+            cat1.Id,
+            13.43m,
+            new BudgetMonthDTO(2023, 5)
+        );
         var monthBudgetId = await _fixture.SendAsync(command);
 
         var monthBudget = await _fixture.GetLast<Entities.MonthBudget>();
