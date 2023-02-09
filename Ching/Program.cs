@@ -49,6 +49,21 @@ app.MapGroup("/overview").MapOverviewEndpoints();
 app.MapGroup("/settlement").MapSettlementEndpoints();
 app.MapGroup("/transfer").MapTransferEndpoints();
 
+if (app.Configuration["RunSeed"] == "true")
+{
+    using (var serviceScope = app.Services.CreateScope())
+    {
+        var db = serviceScope.ServiceProvider.GetService<ChingContext>() ?? throw new ArgumentNullException("ChingContext should not be null during startup");
+
+        var seedAccount = db.Accounts.Where(a => a.Name == "Cheque seed").FirstOrDefault();
+        if (seedAccount == null)
+        {
+            Console.WriteLine("Seeding DB");
+            DatabaseSeeder.Seed(db);
+        }
+    }
+}
+
 app.Run();
 
 public partial class Program { }

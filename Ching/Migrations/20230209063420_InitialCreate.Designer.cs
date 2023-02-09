@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ching.Migrations
 {
     [DbContext(typeof(ChingContext))]
-    [Migration("20230131191516_InitialCreate")]
+    [Migration("20230209063420_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

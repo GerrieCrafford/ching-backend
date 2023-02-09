@@ -6,7 +6,7 @@ namespace Ching.Data;
 
 public class ChingContext : DbContext
 {
-    public ChingContext(DbContextOptions<ChingContext> options)
+    public ChingContext(DbContextOptions<ChingContext> options, IConfiguration configuration)
     : base(options)
     {
     }
