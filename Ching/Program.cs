@@ -2,6 +2,7 @@ using MediatR;
 using FluentValidation;
 
 using Ching.Data;
+using Ching.PipelineBehaviors;
 
 using Ching.Features.Account;
 using Ching.Features.AccountPartition;
@@ -12,7 +13,6 @@ using Ching.Features.MonthBudget;
 using Ching.Features.Overview;
 using Ching.Features.Settlement;
 using Ching.Features.Transfer;
-using Ching.PipelineBehaviors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.CustomSchemaIds(type => type.ToString());
+    options.SchemaFilter<Ching.Utilities.NullableSchemaFilter>();
 });
 builder.Services.AddMediatR(typeof(Program));
 builder.Services.AddSqlite<ChingContext>("Data Source=Ching.db");
