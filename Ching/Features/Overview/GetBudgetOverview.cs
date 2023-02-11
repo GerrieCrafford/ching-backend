@@ -23,7 +23,7 @@ public class GetBudgetOverview
 
         public Result(List<BudgetOverviewItem> items) => OverviewItems = items;
 
-        public record BudgetOverviewItem(int CategoryId, string CategoryName, decimal Spent, decimal Available);
+        public record BudgetOverviewItem(int CategoryId, string CategoryName, decimal Spent, decimal Available, int? ParentCategoryId);
     }
 
     public class Handler : IRequestHandler<Query, Result>
@@ -53,7 +53,8 @@ public class GetBudgetOverview
                     monthBudget.BudgetCategory.Id,
                     monthBudget.BudgetCategory.Name,
                     transfersSpent + transactionsSpent,
-                    available
+                    available,
+                    monthBudget.BudgetCategory.ParentId
                 ));
             }
 

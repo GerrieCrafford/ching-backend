@@ -30,11 +30,17 @@ namespace Ching.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false)
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    ParentId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BudgetCategories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BudgetCategories_BudgetCategories_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "BudgetCategories",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -286,6 +292,11 @@ namespace Ching.Migrations
                 name: "IX_BudgetAssignmentsTransfers_BudgetCategoryId",
                 table: "BudgetAssignmentsTransfers",
                 column: "BudgetCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BudgetCategories_ParentId",
+                table: "BudgetCategories",
+                column: "ParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BudgetIncreases_BudgetCategoryId",

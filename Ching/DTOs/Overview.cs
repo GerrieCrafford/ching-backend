@@ -4,4 +4,4 @@ public record PartitionBalanceDTO(int PartitionId, string PartitionName, decimal
 
 public record TransactionWithBalanceDTO(TransactionDTO Transaction, decimal Balance);
 
-public record BudgetOverviewItemDTO(int CategoryId, string CategoryName, decimal Spent, decimal Available);
+public record BudgetOverviewItemDTO(int CategoryId, string CategoryName, decimal Spent, decimal Available, int? ParentCategoryId);

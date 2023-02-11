@@ -79,18 +79,26 @@ public class GetBudgetOverviewTests : BaseTest
 
         overview.ShouldNotBeNull();
 
-        overview.OverviewItems.Count.ShouldBe(3);
+        overview.OverviewItems.Count.ShouldBe(4);
 
         overview.OverviewItems[0].CategoryName.ShouldBe("Seed category 1");
         overview.OverviewItems[1].CategoryName.ShouldBe("Seed category 2");
         overview.OverviewItems[2].CategoryName.ShouldBe("Seed category 3");
+        overview.OverviewItems[3].CategoryName.ShouldBe("Seed category 4");
 
         overview.OverviewItems[0].Available.ShouldBe(113 + IncreaseAmount);
         overview.OverviewItems[1].Available.ShouldBe(403);
         overview.OverviewItems[2].Available.ShouldBe(551);
+        overview.OverviewItems[3].Available.ShouldBe(91);
 
         overview.OverviewItems[0].Spent.ShouldBe(112m);
         overview.OverviewItems[1].Spent.ShouldBe(52m + 982m);
         overview.OverviewItems[2].Spent.ShouldBe(33m + 921m);
+        overview.OverviewItems[3].Spent.ShouldBe(0m);
+
+        overview.OverviewItems[0].ParentCategoryId.ShouldBeNull();
+        overview.OverviewItems[1].ParentCategoryId.ShouldBeNull();
+        overview.OverviewItems[2].ParentCategoryId.ShouldBeNull();
+        overview.OverviewItems[3].ParentCategoryId.ShouldBe(3);
     }
 }

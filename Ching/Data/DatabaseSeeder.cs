@@ -17,14 +17,16 @@ public static class DatabaseSeeder
         acc3.Partitions.Add(acc3part2);
 
         var cat1 = new BudgetCategory("Food");
+        var cat1child = new BudgetCategory("Snacks", cat1);
         var cat2 = new BudgetCategory("Cars");
         var cat3 = new BudgetCategory("Pension");
-        db.BudgetCategories.AddRange(cat1, cat2, cat3);
+        db.BudgetCategories.AddRange(cat1, cat2, cat3, cat1child);
 
         var mb1 = new MonthBudget(100m, new BudgetMonth(2023, 2), cat1);
         var mb2 = new MonthBudget(200m, new BudgetMonth(2023, 2), cat2);
         var mb3 = new MonthBudget(300m, new BudgetMonth(2023, 2), cat3);
-        db.MonthBudgets.AddRange(mb1, mb2, mb3);
+        var mb4 = new MonthBudget(20m, new BudgetMonth(2023, 2), cat1child);
+        db.MonthBudgets.AddRange(mb1, mb2, mb3, mb4);
 
         db.SaveChanges();
     }

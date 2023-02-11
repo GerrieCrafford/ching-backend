@@ -9,13 +9,14 @@ using FluentValidation;
 
 public class Create
 {
-    public record Command(string Name) : IRequest<int>;
+    public record Command(string Name, int? ParentId = null) : IRequest<int>;
 
     public class CommandValidator : AbstractValidator<Command>
     {
         public CommandValidator()
         {
             RuleFor(command => command.Name).NotEmpty();
+            RuleFor(command => command.ParentId).GreaterThanOrEqualTo(0).Unless(command => command.ParentId == null);
         }
     }
 
@@ -26,7 +27,15 @@ public class Create
 
         public async Task<int> Handle(Command request, CancellationToken cancellationToken)
         {
-            var budgetCategory = new BudgetCategory(request.Name);
+            BudgetCategory? parent = null;
+            if (request.ParentId != null)
+            {
+                parent = await _db.BudgetCategories.FindAsync(request.ParentId);
+                if (parent == null)
+                    throw new DomainException("Parent budget category does not exist.");
+            }
+
+            var budgetCategory = new BudgetCategory(request.Name, parent);
             await _db.BudgetCategories.AddAsync(budgetCategory, cancellationToken);
             await _db.SaveChangesAsync();
 

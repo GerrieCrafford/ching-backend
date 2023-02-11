@@ -20,5 +20,15 @@ public class CreateTests : BaseTest
         created.ShouldNotBeNull();
         created.Id.ShouldBe(budgetCategoryId);
         created.Name.ShouldBe(command.Name);
+
+        var command2 = new Create.Command("Category 2", budgetCategoryId);
+        var budgetCategoryId2 = await _fixture.SendAsync(command2);
+
+        var created2 = await _fixture.ExecuteDbContextAsync(db => db.BudgetCategories.Include(cat => cat.Parent).SingleOrDefaultAsync(cat => cat.Id == budgetCategoryId2));
+
+        created2.ShouldNotBeNull();
+        created2.Parent.ShouldNotBeNull();
+        created2.Parent.Id.ShouldBe(budgetCategoryId);
+        created2.Parent.Name.ShouldBe(command.Name);
     }
 }

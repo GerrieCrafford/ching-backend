@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ching.Migrations
 {
     [DbContext(typeof(ChingContext))]
-    [Migration("20230209063420_InitialCreate")]
+    [Migration("20230211200722_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -156,7 +156,12 @@ namespace Ching.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
 
                     b.ToTable("BudgetCategories");
                 });
@@ -375,6 +380,15 @@ namespace Ching.Migrations
 
                     b.Navigation("BudgetMonth")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Ching.Entities.BudgetCategory", b =>
+                {
+                    b.HasOne("Ching.Entities.BudgetCategory", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId");
+
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("Ching.Entities.BudgetIncrease", b =>

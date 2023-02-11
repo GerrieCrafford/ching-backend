@@ -62,7 +62,7 @@ public class SliceFixture : IAsyncLifetime
                 });
             });
 
-            builder.UseEnvironment("Development");
+            builder.UseEnvironment("Test");
         }
     }
 
@@ -221,13 +221,15 @@ public class SliceFixture : IAsyncLifetime
         var cat1 = new Entities.BudgetCategory("Seed category 1");
         var cat2 = new Entities.BudgetCategory("Seed category 2");
         var cat3 = new Entities.BudgetCategory("Seed category 3");
-        await db.BudgetCategories.AddRangeAsync(cat1, cat2, cat3);
+        var cat4 = new Entities.BudgetCategory("Seed category 4", cat3);
+        await db.BudgetCategories.AddRangeAsync(cat1, cat2, cat3, cat4);
 
         // Month budgets
         var mb1 = new Entities.MonthBudget(113, new BudgetMonth(2023, 1), cat1);
         var mb2 = new Entities.MonthBudget(403, new BudgetMonth(2023, 1), cat2);
         var mb3 = new Entities.MonthBudget(551, new BudgetMonth(2023, 1), cat3);
-        await db.MonthBudgets.AddRangeAsync(mb1, mb2, mb3);
+        var mb4 = new Entities.MonthBudget(91, new BudgetMonth(2023, 1), cat4);
+        await db.MonthBudgets.AddRangeAsync(mb1, mb2, mb3, mb4);
 
         await db.SaveChangesAsync();
     }
