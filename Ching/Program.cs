@@ -21,6 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    options.SupportNonNullableReferenceTypes();
     options.CustomSchemaIds(type => type.ToString());
     options.SchemaFilter<Ching.Utilities.NullableSchemaFilter>();
 });

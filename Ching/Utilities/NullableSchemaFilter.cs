@@ -5,17 +5,15 @@ namespace Ching.Utilities;
 
 public class NullableSchemaFilter : ISchemaFilter
 {
+    /// <summary>
+    /// Add to model.Required all properties where nullable is false
+    /// </summary>
     public void Apply(OpenApiSchema schema, SchemaFilterContext context)
     {
-        if (schema.Type == "object")
-        {
-            foreach (var openApiSchema in schema.Properties)
-            {
-                if (!openApiSchema.Value.Nullable)
-                {
-                    schema.Required.Add(openApiSchema.Key);
-                }
-            }
-        }
+        schema.Properties
+            .Where(x => !x.Value.Nullable && !schema.Required.Contains(x.Key))
+            .Select(x => x.Key)
+            .ToList()
+            .ForEach(key => schema.Required.Add(key));
     }
 }
