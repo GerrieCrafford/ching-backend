@@ -100,7 +100,7 @@ namespace Ching.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("AccountTransactionId")
+                    b.Property<int>("AccountTransactionId")
                         .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Amount")
@@ -136,9 +136,15 @@ namespace Ching.Migrations
                     b.Property<string>("Note")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("TransferId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BudgetCategoryId");
+
+                    b.HasIndex("TransferId")
+                        .IsUnique();
 
                     b.ToTable("BudgetAssignmentsTransfers");
                 });
@@ -231,9 +237,6 @@ namespace Ching.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("BudgetAssignmentId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateOnly>("Date")
                         .HasColumnType("TEXT");
 
@@ -244,8 +247,6 @@ namespace Ching.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BudgetAssignmentId");
 
                     b.HasIndex("DestinationPartitionId");
 
@@ -311,9 +312,11 @@ namespace Ching.Migrations
 
             modelBuilder.Entity("Ching.Entities.BudgetAssignmentTransaction", b =>
                 {
-                    b.HasOne("Ching.Entities.AccountTransaction", null)
+                    b.HasOne("Ching.Entities.AccountTransaction", "AccountTransaction")
                         .WithMany("BudgetAssignments")
-                        .HasForeignKey("AccountTransactionId");
+                        .HasForeignKey("AccountTransactionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Ching.Entities.BudgetCategory", "BudgetCategory")
                         .WithMany()
@@ -340,6 +343,8 @@ namespace Ching.Migrations
                                 .HasForeignKey("BudgetAssignmentTransactionId");
                         });
 
+                    b.Navigation("AccountTransaction");
+
                     b.Navigation("BudgetCategory");
 
                     b.Navigation("BudgetMonth")
@@ -351,6 +356,12 @@ namespace Ching.Migrations
                     b.HasOne("Ching.Entities.BudgetCategory", "BudgetCategory")
                         .WithMany()
                         .HasForeignKey("BudgetCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ching.Entities.Transfer", "Transfer")
+                        .WithOne("BudgetAssignment")
+                        .HasForeignKey("Ching.Entities.BudgetAssignmentTransfer", "TransferId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -377,6 +388,8 @@ namespace Ching.Migrations
 
                     b.Navigation("BudgetMonth")
                         .IsRequired();
+
+                    b.Navigation("Transfer");
                 });
 
             modelBuilder.Entity("Ching.Entities.BudgetCategory", b =>
@@ -475,10 +488,6 @@ namespace Ching.Migrations
 
             modelBuilder.Entity("Ching.Entities.Transfer", b =>
                 {
-                    b.HasOne("Ching.Entities.BudgetAssignmentTransfer", "BudgetAssignment")
-                        .WithMany()
-                        .HasForeignKey("BudgetAssignmentId");
-
                     b.HasOne("Ching.Entities.AccountPartition", "DestinationPartition")
                         .WithMany()
                         .HasForeignKey("DestinationPartitionId")
@@ -490,8 +499,6 @@ namespace Ching.Migrations
                         .HasForeignKey("SourcePartitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("BudgetAssignment");
 
                     b.Navigation("DestinationPartition");
 
@@ -513,6 +520,11 @@ namespace Ching.Migrations
             modelBuilder.Entity("Ching.Entities.Settlement", b =>
                 {
                     b.Navigation("AccountTransactions");
+                });
+
+            modelBuilder.Entity("Ching.Entities.Transfer", b =>
+                {
+                    b.Navigation("BudgetAssignment");
                 });
 #pragma warning restore 612, 618
         }

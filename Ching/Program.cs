@@ -1,5 +1,6 @@
 using MediatR;
 using FluentValidation;
+using System.Threading.Tasks;
 
 using Ching.Data;
 using Ching.PipelineBehaviors;
@@ -57,15 +58,16 @@ if (app.Configuration["RunSeed"] == "true")
 {
     using (var serviceScope = app.Services.CreateScope())
     {
-        var db =
-            serviceScope.ServiceProvider.GetService<ChingContext>()
-            ?? throw new ArgumentNullException("ChingContext should not be null during startup");
+        var db = serviceScope.ServiceProvider.GetRequiredService<ChingContext>();
+        var mediator = serviceScope.ServiceProvider.GetRequiredService<IMediator>();
 
         var seedAccount = db.Accounts.Where(a => a.Name == "Cheque seed").FirstOrDefault();
         if (seedAccount == null)
         {
             Console.WriteLine("Seeding DB");
-            DatabaseSeeder.Seed(db);
+            var res = DatabaseSeeder.Seed(db, mediator);
+            res.Wait();
+            Console.WriteLine("DB seeding done");
         }
     }
 }

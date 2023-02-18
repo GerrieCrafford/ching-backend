@@ -1,10 +1,14 @@
+using Ching.DTOs;
 using Ching.Entities;
+using MediatR;
+using CreateFromBudgetAssignmentsCmd = Ching.Features.AccountTransaction.CreateFromBudgetAssignments.Command;
+using CreateSavingsPaymentCmd = Ching.Features.Transfer.CreateSavingsPayment.Command;
 
 namespace Ching.Data;
 
 public static class DatabaseSeeder
 {
-    public static void Seed(ChingContext db)
+    public static async Task Seed(ChingContext db, IMediator mediator)
     {
         var acc1 = new Account("Cheque seed");
         var acc2 = new Account("Credit seed");
@@ -28,20 +32,60 @@ public static class DatabaseSeeder
         var mb4 = new MonthBudget(20m, new BudgetMonth(2023, 2), cat1child);
         db.MonthBudgets.AddRange(mb1, mb2, mb3, mb4);
 
-        var ba1 = new BudgetAssignmentTransaction(
-            cat1,
-            100m,
-            new BudgetMonth(2023, 2),
-            "Some note"
-        );
-        var ba2 = new BudgetAssignmentTransaction(
-            cat2,
-            500m,
-            new BudgetMonth(2023, 2),
-            "Some note"
-        );
-        db.BudgetAssignmentsTransactions.AddRange(ba1, ba2);
-
         db.SaveChanges();
+
+        var accountTransaction1Id = await mediator.Send(
+            new CreateFromBudgetAssignmentsCmd(
+                acc1.RemainingPartition.Id,
+                new DateOnly(2023, 2, 3),
+                "Some recipient",
+                new List<CreateFromBudgetAssignmentsCmd.BudgetAssignment>
+                {
+                    new CreateFromBudgetAssignmentsCmd.BudgetAssignment(
+                        cat1.Id,
+                        new BudgetMonthDTO(2023, 2),
+                        10m
+                    ),
+                    new CreateFromBudgetAssignmentsCmd.BudgetAssignment(
+                        cat2.Id,
+                        new BudgetMonthDTO(2023, 2),
+                        15m
+                    ),
+                }
+            )
+        );
+        var accountTransaction2Id = await mediator.Send(
+            new CreateFromBudgetAssignmentsCmd(
+                acc1.RemainingPartition.Id,
+                new DateOnly(2023, 2, 20),
+                "Some other recipient",
+                new List<CreateFromBudgetAssignmentsCmd.BudgetAssignment>
+                {
+                    new CreateFromBudgetAssignmentsCmd.BudgetAssignment(
+                        cat1.Id,
+                        new BudgetMonthDTO(2023, 2),
+                        30m
+                    ),
+                    new CreateFromBudgetAssignmentsCmd.BudgetAssignment(
+                        cat2.Id,
+                        new BudgetMonthDTO(2023, 2),
+                        55m
+                    ),
+                }
+            )
+        );
+
+        var transfer1Id = await mediator.Send(
+            new CreateSavingsPaymentCmd(
+                new DateOnly(2023, 2, 15),
+                acc3part1.Id,
+                acc3part2.Id,
+                new CreateSavingsPaymentCmd.BudgetAssignmentData(
+                    cat1.Id,
+                    new BudgetMonthDTO(2023, 2),
+                    150m
+                )
+            )
+        );
     }
 }
