@@ -11,12 +11,14 @@ public static class BudgetAssignmentEndpoints
     {
         group
             .MapGet("/", List)
-            .Produces<List<BudgetAssignmentDTO>>()
+            .Produces<PaginatedDTO<BudgetAssignmentDTO>>()
             .WithName("GetBudgetAssignmentList");
     }
 
     public static async Task<IResult> List(
         int? budgetCategoryId,
+        int? offset,
+        int? limit,
         IMediator mediator,
         IMapper mapper
     )
@@ -30,8 +32,10 @@ public static class BudgetAssignmentEndpoints
                 return Results.NotFound();
 
             var dtos = mapper.Map<List<BudgetAssignmentDTO>>(response.BudgetAssignments);
+            var total = dtos.Count;
+            dtos = dtos.Skip(offset ?? 0).Take(limit ?? 100).ToList();
 
-            return Results.Ok(dtos);
+            return Results.Ok(new PaginatedDTO<BudgetAssignmentDTO>(dtos, total));
         }
         catch (ValidationException exception)
         {
