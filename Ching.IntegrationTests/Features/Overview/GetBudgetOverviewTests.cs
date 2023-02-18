@@ -11,7 +11,9 @@ namespace Ching.IntegrationTests.Features.Overview;
 public class GetBudgetOverviewTests : BaseTest
 {
     private readonly SliceFixture _fixture;
-    public GetBudgetOverviewTests(SliceFixture fixture) : base(fixture) => _fixture = fixture;
+
+    public GetBudgetOverviewTests(SliceFixture fixture)
+        : base(fixture) => _fixture = fixture;
 
     static decimal IncreaseAmount { get; set; }
 
@@ -21,53 +23,81 @@ public class GetBudgetOverviewTests : BaseTest
 
         IncreaseAmount = 132m;
 
-        var accountTransactionId1 = await _fixture.SendAsync(new AccountTransactionCreate.Command
-        (
-            1,
-            new DateOnly(),
-            "Recipient",
-            new List<AccountTransactionCreate.Command.BudgetAssignment>
-            {
-                new AccountTransactionCreate.Command.BudgetAssignment(1, new BudgetMonthDTO(2023, 1), 112m),
-                new AccountTransactionCreate.Command.BudgetAssignment(2, new BudgetMonthDTO(2023, 1), 52m),
-                new AccountTransactionCreate.Command.BudgetAssignment(1, new BudgetMonthDTO(2023, 2), 332m),
-            }
-        ));
+        var accountTransactionId1 = await _fixture.SendAsync(
+            new AccountTransactionCreate.Command(
+                1,
+                new DateOnly(),
+                "Recipient",
+                new List<AccountTransactionCreate.Command.BudgetAssignment>
+                {
+                    new AccountTransactionCreate.Command.BudgetAssignment(
+                        1,
+                        new BudgetMonthDTO(2023, 1),
+                        112m
+                    ),
+                    new AccountTransactionCreate.Command.BudgetAssignment(
+                        2,
+                        new BudgetMonthDTO(2023, 1),
+                        52m
+                    ),
+                    new AccountTransactionCreate.Command.BudgetAssignment(
+                        1,
+                        new BudgetMonthDTO(2023, 2),
+                        332m
+                    ),
+                }
+            )
+        );
 
-        var accountTransactionId2 = await _fixture.SendAsync(new AccountTransactionCreate.Command
-        (
-            1,
-            new DateOnly(),
-            "Recipient",
-            new List<AccountTransactionCreate.Command.BudgetAssignment>
-            {
-                new AccountTransactionCreate.Command.BudgetAssignment(2, new BudgetMonthDTO(2023, 1), 982m),
-                new AccountTransactionCreate.Command.BudgetAssignment(3, new BudgetMonthDTO(2023, 1), 33m),
-            }
-        ));
+        var accountTransactionId2 = await _fixture.SendAsync(
+            new AccountTransactionCreate.Command(
+                1,
+                new DateOnly(),
+                "Recipient",
+                new List<AccountTransactionCreate.Command.BudgetAssignment>
+                {
+                    new AccountTransactionCreate.Command.BudgetAssignment(
+                        2,
+                        new BudgetMonthDTO(2023, 1),
+                        982m
+                    ),
+                    new AccountTransactionCreate.Command.BudgetAssignment(
+                        3,
+                        new BudgetMonthDTO(2023, 1),
+                        33m
+                    ),
+                }
+            )
+        );
 
-        var spTransferId = await _fixture.SendAsync(new TransferCreateSavingsPayment.Command
-        (
-            new DateOnly(),
-            921m,
-            1,
-            2,
-            new TransferCreateSavingsPayment.Command.BudgetAssignmentData(3, new BudgetMonthDTO(2023, 1), 921m)
-        ));
+        var spTransferId = await _fixture.SendAsync(
+            new TransferCreateSavingsPayment.Command(
+                new DateOnly(),
+                1,
+                2,
+                new TransferCreateSavingsPayment.Command.BudgetAssignmentData(
+                    3,
+                    new BudgetMonthDTO(2023, 1),
+                    921m
+                )
+            )
+        );
 
-        var biTransferId1 = await _fixture.SendAsync(new BudgetIncreaseCreate.Command
-        (
-            1,
-            new BudgetMonthDTO(2023, 1),
-            new BudgetIncreaseCreate.Command.TransferData(new DateOnly(), IncreaseAmount, 1, 2)
-        ));
+        var biTransferId1 = await _fixture.SendAsync(
+            new BudgetIncreaseCreate.Command(
+                1,
+                new BudgetMonthDTO(2023, 1),
+                new BudgetIncreaseCreate.Command.TransferData(new DateOnly(), IncreaseAmount, 1, 2)
+            )
+        );
 
-        var biTransferId2 = await _fixture.SendAsync(new BudgetIncreaseCreate.Command
-        (
-            2,
-            new BudgetMonthDTO(2023, 2),
-            new BudgetIncreaseCreate.Command.TransferData(new DateOnly(), 442m, 1, 2)
-        ));
+        var biTransferId2 = await _fixture.SendAsync(
+            new BudgetIncreaseCreate.Command(
+                2,
+                new BudgetMonthDTO(2023, 2),
+                new BudgetIncreaseCreate.Command.TransferData(new DateOnly(), 442m, 1, 2)
+            )
+        );
     }
 
     [Fact]

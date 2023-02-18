@@ -9,20 +9,24 @@ public static class AccountTransactionsEndpoints
 {
     public static void MapAccountTransactionsApi(this RouteGroupBuilder group)
     {
-        group.MapPost("/", Create)
-            .Produces<int>()
-            .WithName("CreateAccountTransaction");
+        group.MapPost("/", Create).Produces<int>().WithName("CreateAccountTransaction");
 
-        group.MapPost("/budget-assignment", CreateFromAssignments)
+        group
+            .MapPost("/budget-assignment", CreateFromAssignments)
             .Produces<int>()
             .WithName("CreateAccountTransactionFromAssignments");
 
-        group.MapPatch("/{accountTransactionId}", Edit)
+        group
+            .MapPatch("/{accountTransactionId}", Edit)
             .Produces(200)
             .WithName("EditAccountTransaction");
     }
 
-    public static async Task<IResult> Create(Create.Command request, IMediator mediator, IMapper mapper)
+    public static async Task<IResult> Create(
+        Create.Command request,
+        IMediator mediator,
+        IMapper mapper
+    )
     {
         try
         {
@@ -39,7 +43,11 @@ public static class AccountTransactionsEndpoints
         }
     }
 
-    public static async Task<IResult> CreateFromAssignments(CreateFromBudgetAssignments.Command request, IMediator mediator, IMapper mapper)
+    public static async Task<IResult> CreateFromAssignments(
+        CreateFromBudgetAssignments.Command request,
+        IMediator mediator,
+        IMapper mapper
+    )
     {
         try
         {
@@ -56,10 +64,17 @@ public static class AccountTransactionsEndpoints
         }
     }
 
-    public static async Task<IResult> Edit(int accountTransactionId, EditAccountTransactionRequest request, IMediator mediator, IMapper mapper)
+    public static async Task<IResult> Edit(
+        int accountTransactionId,
+        EditAccountTransactionRequest request,
+        IMediator mediator,
+        IMapper mapper
+    )
     {
-        var command = mapper.Map<Edit.Command>(request);
-        command.AccountTransactionId = accountTransactionId;
+        var command = mapper.Map<Edit.Command>(
+            request,
+            opt => opt.Items["AccountTransactionId"] = accountTransactionId
+        );
 
         await mediator.Send(command);
 
@@ -71,7 +86,11 @@ public static class AccountTransactionsEndpoints
         public MappingProfile()
         {
             CreateMap<CreateBudgetAssignmentRequest, Edit.Command.BudgetAssignment>();
-            CreateMap<EditAccountTransactionRequest, Edit.Command>();
+            CreateMap<EditAccountTransactionRequest, Edit.Command>()
+                .ForCtorParam(
+                    "accountTransactionId",
+                    opts => opts.MapFrom((_, ctx) => ctx.Items["AccountTransactionId"])
+                );
         }
     }
 }

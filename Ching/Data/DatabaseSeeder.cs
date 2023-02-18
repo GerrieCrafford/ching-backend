@@ -28,6 +28,20 @@ public static class DatabaseSeeder
         var mb4 = new MonthBudget(20m, new BudgetMonth(2023, 2), cat1child);
         db.MonthBudgets.AddRange(mb1, mb2, mb3, mb4);
 
+        var ba1 = new BudgetAssignmentTransaction(
+            cat1,
+            100m,
+            new BudgetMonth(2023, 2),
+            "Some note"
+        );
+        var ba2 = new BudgetAssignmentTransaction(
+            cat2,
+            500m,
+            new BudgetMonth(2023, 2),
+            "Some note"
+        );
+        db.BudgetAssignmentsTransactions.AddRange(ba1, ba2);
+
         db.SaveChanges();
     }
 }

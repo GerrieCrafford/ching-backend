@@ -8,5 +8,8 @@
         "**/Thumbs.db": true,
         "**/bin": true,
         "**/obj": true
+    },
+    "[csharp]": {
+        "editor.defaultFormatter": "csharpier.csharpier-vscode"
     }
 }

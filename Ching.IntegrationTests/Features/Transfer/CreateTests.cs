@@ -7,19 +7,28 @@ namespace Ching.IntegrationTests.Features.Transfer;
 public class CreateTests : BaseTest
 {
     private readonly SliceFixture _fixture;
-    public CreateTests(SliceFixture fixture) : base(fixture) => _fixture = fixture;
+
+    public CreateTests(SliceFixture fixture)
+        : base(fixture) => _fixture = fixture;
 
     [Fact]
     public async Task Should_create_transfer()
     {
-        var cat1 = await _fixture.FindAsync<Entities.BudgetCategory>(x => x.Name == "Seed category 1");
+        var cat1 = await _fixture.FindAsync<Entities.BudgetCategory>(
+            x => x.Name == "Seed category 1"
+        );
         var part1 = await _fixture.FindAsync<Entities.AccountPartition>(x => x.Name == "ACC1P1");
         var part2 = await _fixture.FindAsync<Entities.AccountPartition>(x => x.Name == "ACC1P2");
 
         part1.ShouldNotBeNull();
         part2.ShouldNotBeNull();
 
-        var command = new CreateTransfer.Command(new DateOnly(2023, 1, 20), 121.64m, part2.Id, part1.Id);
+        var command = new CreateTransfer.Command(
+            new DateOnly(2023, 1, 20),
+            121.64m,
+            part2.Id,
+            part1.Id
+        );
         var transferId = await _fixture.SendAsync(command);
 
         var transfer = await _fixture.GetLast<Entities.Transfer>();
@@ -36,7 +45,9 @@ public class CreateTests : BaseTest
     [Fact]
     public async Task Should_create_savings_payment()
     {
-        var cat1 = await _fixture.FindAsync<Entities.BudgetCategory>(x => x.Name == "Seed category 1");
+        var cat1 = await _fixture.FindAsync<Entities.BudgetCategory>(
+            x => x.Name == "Seed category 1"
+        );
         var part1 = await _fixture.FindAsync<Entities.AccountPartition>(x => x.Name == "ACC1P1");
         var part2 = await _fixture.FindAsync<Entities.AccountPartition>(x => x.Name == "ACC1P2");
 
@@ -44,14 +55,11 @@ public class CreateTests : BaseTest
         part1.ShouldNotBeNull();
         part2.ShouldNotBeNull();
 
-        var command = new CreateSavingsPayment.Command
-        (
+        var command = new CreateSavingsPayment.Command(
             new DateOnly(2023, 4, 1),
-            992.4m,
             part1.Id,
             part2.Id,
-            new CreateSavingsPayment.Command.BudgetAssignmentData
-            (
+            new CreateSavingsPayment.Command.BudgetAssignmentData(
                 cat1.Id,
                 new BudgetMonthDTO(2023, 3),
                 992.4m

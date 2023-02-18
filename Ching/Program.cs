@@ -7,6 +7,7 @@ using Ching.PipelineBehaviors;
 using Ching.Features.Account;
 using Ching.Features.AccountPartition;
 using Ching.Features.AccountTransaction;
+using Ching.Features.BudgetAssignment;
 using Ching.Features.BudgetCategory;
 using Ching.Features.BudgetIncrease;
 using Ching.Features.MonthBudget;
@@ -49,12 +50,15 @@ app.MapGroup("/month-budget").MapMonthBudgetsEndpoints();
 app.MapGroup("/overview").MapOverviewEndpoints();
 app.MapGroup("/settlement").MapSettlementEndpoints();
 app.MapGroup("/transfer").MapTransferEndpoints();
+app.MapGroup("/budget-assignment").MapBudgetAssignmentTransactions();
 
 if (app.Configuration["RunSeed"] == "true")
 {
     using (var serviceScope = app.Services.CreateScope())
     {
-        var db = serviceScope.ServiceProvider.GetService<ChingContext>() ?? throw new ArgumentNullException("ChingContext should not be null during startup");
+        var db =
+            serviceScope.ServiceProvider.GetService<ChingContext>()
+            ?? throw new ArgumentNullException("ChingContext should not be null during startup");
 
         var seedAccount = db.Accounts.Where(a => a.Name == "Cheque seed").FirstOrDefault();
         if (seedAccount == null)
