@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using Ching.Data;
 using Ching.PipelineBehaviors;
+using Ching.Utilities;
 
 using Ching.Features.Account;
 using Ching.Features.AccountPartition;
@@ -15,6 +16,7 @@ using Ching.Features.MonthBudget;
 using Ching.Features.Overview;
 using Ching.Features.Settlement;
 using Ching.Features.Transfer;
+using Microsoft.AspNetCore.Http.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +33,9 @@ builder.Services.AddSqlite<ChingContext>("Data Source=Ching.db");
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+builder.Services.Configure<JsonOptions>(
+    options => options.SerializerOptions.Converters.Add(new DateOnlyJsonConverter())
+);
 
 var app = builder.Build();
 
