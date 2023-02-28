@@ -1,6 +1,5 @@
 <h1 align="center">
-  <img alt="ching logo" src="https://raw.githubusercontent.com/GerrieCrafford/ching-backend/main/.github/images/ching-logo.png" width="224px"/><br/>
-  Ching Backend
+  <img alt="ching logo" src="https://github.com/GerrieCrafford/ching-backend/blob/main/.github/ching-logo.png" width="224px"/><br/> Ching Backend
 </h1>
 <p align="center">
 Backend for Ching, my own personal finance management web app.
